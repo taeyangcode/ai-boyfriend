@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import UserFilter from './UserFilter/UserFilter'
+import Questionnaire from './Questionnaire/Questionnaire'
+import Result from './Result/Result'
 import NotificationHandler from './Notification/Notification'
 
 function App() {
@@ -22,14 +24,14 @@ function App() {
                         changePage={changePage}
                     />
                 )
-            // case 'questionnaire':
-            //     return <Questionnaire />
-            // case 'result':
-            //     return <Result />
+            case 'questionnaire':
+                return <Questionnaire />
+            case 'result':
+                return <Result />
             default:
                 return (
                     <>
-                        <div>Page not found</div>
+                        <h1>Page not found</h1>
                     </>
                 )
         }

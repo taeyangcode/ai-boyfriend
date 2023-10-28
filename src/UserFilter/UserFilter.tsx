@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, MouseEvent } from 'react'
 import './../index.css'
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
     changePage: (newPage: Page) => void
 }
 
-function UserFilter({ notifications, setNotifications }: Props) {
+function UserFilter({ notifications, setNotifications, changePage }: Props) {
     const [currentPosition, setCurrentPosition] =
         useState<GeolocationPosition>()
     const [budget, setBudget] = useState<string>('')
@@ -38,9 +38,9 @@ function UserFilter({ notifications, setNotifications }: Props) {
                 ]),
             { timeout: 30000 }
         )
-    }, [])
+    })
 
-    async function submitForm() {
+    async function submitForm(event: MouseEvent<HTMLButtonElement>) {
         const input: UserInput = {
             longitude: Number(currentPosition?.coords.longitude),
             latitude: Number(currentPosition?.coords.latitude),
@@ -49,15 +49,19 @@ function UserFilter({ notifications, setNotifications }: Props) {
             date: Number(time),
             dietary_preferences: dietaryPreferences,
         }
-        event?.preventDefault()
+        event.preventDefault()
         const response = await fetch('http://127.0.0.1:8000/api/businesses', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(input),
-        }).then((response) => console.log(response.json()))
-        console.log(response)
+        })
+        const json = await response.json()
+        console.log(json)
+
+        // Change page
+        changePage('questionnaire')
     }
 
     return (
