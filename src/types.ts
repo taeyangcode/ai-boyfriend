@@ -17,3 +17,9 @@ type UserInput = {
     date: number; // Unix timestamp
     dietary_preferences: string[];
 };
+type NotificationType = ErrorDetails;
+
+interface ErrorDetails {
+    code: number;
+    message: string;
+}
