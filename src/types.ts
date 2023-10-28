@@ -114,23 +114,30 @@ interface YelpBusiness {
     price?: string
     // Price level of the business. Value is one of $, $$, $$$ and $$$$.
 
+    location: YelpLocation
     phone: string
-
     display_phone: string
-
     distance?: string
-
     hours: Array<YelpHours>
-
     attributes?: Record<string, any>
-}
+    is_claimed: boolean
+    date_opened?: string
+    date_closed?: string
+    photos: Array<string>
 
-interface YelpResponse {
-    businesses: Array<YelpBusiness>
+    special_hours?: {
+        date: Date
+        start?: string
+        end?: string
+        is_overnight?: boolean
+        is_closed?: boolean
+    }
 
-    total: number
-
-    region: {
-        center: YelpLocation
+    messaging?: {
+        url: string
+        use_case_text: string
+        response_rate?: string
+        response_time?: number
+        is_enabled?: boolean
     }
 }

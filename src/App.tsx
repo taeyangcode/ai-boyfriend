@@ -45,7 +45,7 @@ function App() {
                     />
                 )
             case 'result':
-                return <Result locationIds={[]} />
+                return <Result locationIds={['chick-fil-a-daly-city-2']} />
             default:
                 return (
                     <>
