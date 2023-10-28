@@ -11,10 +11,9 @@ function ErrorNotification({ code, message }: ErrorDetails): ReactNode {
 
 interface Props {
     notifications: Array<NotificationType>;
-    setNotifications: (notifications: Array<NotificationType>) => void;
 }
 
-function NotificationHandler({ notifications, setNotifications }: Props) {
+function NotificationHandler({ notifications }: Props) {
     return (
         <div className="absolute top-0 right-0">
             {notifications?.map((notification) => ErrorNotification(notification))}

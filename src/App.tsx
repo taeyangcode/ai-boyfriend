@@ -7,7 +7,7 @@ function App() {
 
     return (
         <>
-            <NotificationHandler notifications={notifications} setNotifications={setNotifications} />
+            <NotificationHandler notifications={notifications} />
             <UserFilter notifications={notifications} setNotifications={setNotifications} />;
         </>
     );

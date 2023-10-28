@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./../index.css";
 
 interface Props {
@@ -38,17 +38,17 @@ function UserFilter({ notifications, setNotifications }: Props) {
             radius: Number(distance),
             date: Number(time),
             dietary_preferences: dietaryPreferences,
-        }
-        event?.preventDefault()
-        const response = await fetch('http://127.0.0.1:8000/api/businesses', {
-            method: 'POST',
+        };
+        event?.preventDefault();
+        const response = await fetch("http://127.0.0.1:8000/api/businesses", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify(input)
-        }).then(response => console.log(response.json()))
-        console.log(response)
-    }   
+            body: JSON.stringify(input),
+        }).then((response) => console.log(response.json()));
+        console.log(response);
+    }
 
     return (
         <div className="bg-gray-100 p-8 rounded-lg shadow-md">
