@@ -4,13 +4,17 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "uvicorn api.main:app --reload",
+    "watch": "chokidar '**/*.tsx' '**/*.css' --ignore '**/node_modules/**' --ignore '**/dist/**' -c 'npm run build'",
+    "dev:watch": "concurrently \"npm run dev\" \"npm run watch\"",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
     "autoprefixer": "^10.4.16",
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^8.2.2",
     "postcss": "^8.4.31",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
