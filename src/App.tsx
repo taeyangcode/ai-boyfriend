@@ -8,7 +8,7 @@ function App() {
     const [notifications, setNotifications] = useState<Array<NotificationType>>(
         []
     )
-    const [selectedPage, setSelectedPage] = useState<Page>('preference')
+    const [selectedPage, setSelectedPage] = useState<Page>('result')
 
     const changePage = (newPage: Page) => {
         setSelectedPage(newPage)
