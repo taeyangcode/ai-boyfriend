@@ -1,5 +1,24 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import "./../index.css";
+
+interface LocationError {
+    code: number;
+    message: string;
+}
+
+function LocationRequired({ code, message }: LocationError): ReactNode {
+    return (
+        <>
+            <div
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded absolute top-0 right-0"
+                role="alert"
+            >
+                <strong className="font-bold">{code}</strong>
+                <span className="block sm:inline">{message}</span>
+            </div>
+        </>
+    );
+}
 
 function UserFilter() {
     const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>();
@@ -17,16 +36,22 @@ function UserFilter() {
         }
     };
 
+    const [locationError, setLocationError] = useState<LocationError>();
+
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (position) => setCurrentPosition(position),
-            (error) => console.error(error),
+            (error) => {
+                setLocationError({ code: error.code, message: error.message });
+                setTimeout(() => setLocationError(undefined), 3000);
+            },
             { timeout: 30000 }
         );
     }, []);
 
     return (
         <div className="bg-gray-100 p-8 rounded-lg shadow-md">
+            {locationError ? LocationRequired(locationError) : null}
             <h2 className="text-2xl font-semibold mb-4">Restaurant Preferences</h2>
 
             <div className="mb-4">
