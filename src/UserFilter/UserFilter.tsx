@@ -5,9 +5,17 @@ interface Props {
     notifications: Array<NotificationType>
     setNotifications: (value: Array<NotificationType>) => void
     changePage: (newPage: Page) => void
+    setQuestion: (value: string) => void
+    setChoices: (value: Array<string>) => void
 }
 
-function UserFilter({ notifications, setNotifications, changePage }: Props) {
+function UserFilter({
+    notifications,
+    setNotifications,
+    changePage,
+    setQuestion,
+    setChoices,
+}: Props) {
     const [currentPosition, setCurrentPosition] =
         useState<GeolocationPosition>()
     const [budget, setBudget] = useState<string>('')
@@ -59,6 +67,13 @@ function UserFilter({ notifications, setNotifications, changePage }: Props) {
         })
         const json = await response.json()
         console.log(json)
+        console.log('separator')
+        console.log(json['businesses'][0])
+
+        // // Store response of question and choice
+        // const questionAndChoices = json['function_call']['question']
+        // setQuestion(questionAndChoices['question'])
+        // setChoices(questionAndChoices['choices'])
 
         // Change page
         changePage('questionnaire')
