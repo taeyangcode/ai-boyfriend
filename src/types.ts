@@ -32,6 +32,15 @@ type GeoInput = {
 };
 
 type NotificationType = ErrorDetails;
+    longitude: number
+    latitude: number
+    price: number
+    radius: number
+    date: number // Unix timestamp
+    dietary_preferences: string[]
+}
+
+type NotificationType = ErrorDetails
 
 interface ErrorDetails {
     code: number
