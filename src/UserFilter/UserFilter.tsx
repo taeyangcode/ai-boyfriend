@@ -4,6 +4,7 @@ import './../index.css'
 interface Props {
     notifications: Array<NotificationType>
     setNotifications: (value: Array<NotificationType>) => void
+    changePage: (newPage: Page) => void
 }
 
 function UserFilter({ notifications, setNotifications }: Props) {
@@ -49,7 +50,7 @@ function UserFilter({ notifications, setNotifications }: Props) {
             dietary_preferences: dietaryPreferences,
         }
         event?.preventDefault()
-        const response = await fetch('http://localhost:8000/api/businesses', {
+        const response = await fetch('http://127.0.0.1:8000/api/businesses', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -69,7 +70,6 @@ function UserFilter({ notifications, setNotifications }: Props) {
                 <div>Longitude: {currentPosition?.coords.longitude}</div>
                 <div>Latitude: {currentPosition?.coords.latitude}</div>
             </div>
-            <div className="bg-sky-700 px-4 py-2 text-white hover:bg-sky-800 sm:px-8 sm:py-3"></div>
 
             <form>
                 <div className="mb-4">
