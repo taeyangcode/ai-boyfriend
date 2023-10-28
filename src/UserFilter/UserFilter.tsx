@@ -38,10 +38,17 @@ function UserFilter({ notifications, setNotifications }: Props) {
             radius: Number(distance),
             date: Number(time),
             dietary_preferences: dietaryPreferences,
+<<<<<<< Updated upstream
         };
         event?.preventDefault();
         const response = await fetch("http://127.0.0.1:8000/api/businesses", {
             method: "POST",
+=======
+        }
+        event?.preventDefault()
+        const response = await fetch('http://localhost:8000/api/businesses', {
+            method: 'POST',
+>>>>>>> Stashed changes
             headers: {
                 "Content-Type": "application/json",
             },
