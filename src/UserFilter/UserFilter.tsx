@@ -34,10 +34,8 @@ function UserFilter() {
                 </div>
 
                 <form>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            How much are you willing to spend on the meal?{" "}
-                        </label>
+                    <div>
+                        <label>How much are you willing to spend on the meal? </label>
                         <input type="text" value={budget} onChange={(e) => setBudget(e.target.value)} />
                     </div>
                     <div>
