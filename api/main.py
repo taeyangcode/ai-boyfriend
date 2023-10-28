@@ -119,7 +119,6 @@ async def get_coordinates_forAddress(input: GeoInput):
     except Exception as e:
         print("Error fetching coordinates:", str(e))
         return None
-=======
 @api_app.post("/businesses/{id}")
 async def get_business(id: str):
     search_url = f"{yelp_base_url}businesses/{id}"
@@ -133,7 +132,6 @@ async def get_business(id: str):
         return response.json()
     else:
         return {"error": response.status_code}
->>>>>>> 75b0b45 (create endpoint for specific business)
 
 
 ## OPENAI API
