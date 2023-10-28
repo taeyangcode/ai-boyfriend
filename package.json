@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "uvicorn api.main:app --reload",
+    "dev": "cd api && source ./venv/bin/activate && uvicorn main:app --reload",
     "watch": "chokidar '**/*.tsx' '**/*.css' --ignore '**/node_modules/**' --ignore '**/dist/**' -c 'npm run build'",
     "dev:watch": "concurrently \"npm run dev\" \"npm run watch\"",
     "build": "tsc && vite build",
