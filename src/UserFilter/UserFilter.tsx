@@ -3,16 +3,21 @@ import { useEffect, useState } from "react";
 function UserFilter() {
     const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>();
 
+    const [radius, setRadius] = useState<number>();
+
+    const [category, setCategory] = useState<FoodCategory>();
+
+    const [priceLevel, setPriceLevel] = useState<PriceLevel>();
+
     useEffect(() => {
-        navigator.geolocation.getCurrentPosition((position) => setCurrentPosition(position));
+        navigator.geolocation.getCurrentPosition(
+            (position) => setCurrentPosition(position),
+            (error) => console.error(error),
+            { timeout: 30000 }
+        );
     }, []);
 
-    return (
-        <div>
-            <div>Longitude: {currentPosition?.coords.longitude}</div>
-            <div>Latitude: {currentPosition?.coords.latitude}</div>
-        </div>
-    );
+    return <div></div>;
 }
 
 export default UserFilter;
