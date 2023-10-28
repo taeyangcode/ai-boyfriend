@@ -5,9 +5,7 @@ CalHacks 10.0 submission.
 ### Setup
 
 ```bash
-# Starts an interactive session that'll guide you through the process.
-# You'll get a list of revisions and revert traffic to any one of them.
-# Takes 2 minutes.
+# Instructions for starting the server locally 
 
 # Install
 npm install && npm run build
