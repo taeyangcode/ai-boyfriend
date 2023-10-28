@@ -32,6 +32,8 @@ function UserFilter({ notifications, setNotifications }: Props) {
 
     async function submitForm() {
         const input: UserInput = {
+            longitude: Number(currentPosition?.coords.longitude),
+            latitude: Number(currentPosition?.coords.latitude),
             price: Number(budget),
             radius: Number(distance),
             date: Number(time),

@@ -23,10 +23,8 @@ tz = pytz.timezone("America/Los_Angeles")
 
 ## Define models
 class UserInput(BaseModel):
-    # class Position:
-    #     longitude: float
-    #     latitude: float
-
+    longitude: float
+    latitude: float
     price: int
     radius: int
     date: int
@@ -69,11 +67,12 @@ async def get_businesses(input: UserInput):
     }
     payload = {
         "term": "food",
-        "longitude": 60,
-        "latitude": 60,
-        "price": [1],
-        "radius": 1000,
-        "open_at": 1698506270,
+        "limit": 50,  # max of 50 results
+        "longitude": input.longitude,
+        "latitude": input.latitude,
+        "price": enumerate_to(input.price),
+        "radius": input.radius,
+        "open_at": input.date,
     }
     response = requests.get(search_url, headers=headers, params=payload)
     if response.ok:
