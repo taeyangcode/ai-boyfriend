@@ -1,34 +1,43 @@
-import { useEffect, useState } from "react";
-import "./../index.css";
+import { useEffect, useState } from 'react'
+import './../index.css'
 
 interface Props {
-    notifications: Array<NotificationType>;
-    setNotifications: (value: Array<NotificationType>) => void;
+    notifications: Array<NotificationType>
+    setNotifications: (value: Array<NotificationType>) => void
 }
 
 function UserFilter({ notifications, setNotifications }: Props) {
-    const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>();
-    const [budget, setBudget] = useState<string>("");
-    const [distance, setDistance] = useState<string>("");
-    const [time, setTime] = useState<string>("");
-    const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([]);
+    const [currentPosition, setCurrentPosition] =
+        useState<GeolocationPosition>()
+    const [budget, setBudget] = useState<string>('')
+    const [distance, setDistance] = useState<string>('')
+    const [time, setTime] = useState<string>('')
+    const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
 
-    const handleDietaryPreferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { value, checked } = event.target;
+    const handleDietaryPreferenceChange = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const { value, checked } = event.target
         if (checked) {
-            setDietaryPreferences([...dietaryPreferences, value]);
+            setDietaryPreferences([...dietaryPreferences, value])
         } else {
-            setDietaryPreferences(dietaryPreferences.filter((pref) => pref !== value));
+            setDietaryPreferences(
+                dietaryPreferences.filter((pref) => pref !== value)
+            )
         }
-    };
+    }
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (position) => setCurrentPosition(position),
-            (error) => setNotifications([...notifications, { code: error.code, message: error.message }]),
+            (error) =>
+                setNotifications([
+                    ...notifications,
+                    { code: error.code, message: error.message },
+                ]),
             { timeout: 30000 }
-        );
-    }, []);
+        )
+    }, [])
 
     async function submitForm() {
         const input: UserInput = {
@@ -43,58 +52,71 @@ function UserFilter({ notifications, setNotifications }: Props) {
         const response = await fetch('http://localhost:8000/api/businesses', {
             method: 'POST',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(input),
-        }).then((response) => console.log(response.json()));
-        console.log(response);
+        }).then((response) => console.log(response.json()))
+        console.log(response)
     }
 
     return (
-        <div className="bg-gray-100 p-8 rounded-lg shadow-md">
-            <h2 className="text-2xl font-semibold mb-4">Restaurant Preferences</h2>
+        <div className="rounded-lg bg-gray-100 p-8 shadow-md">
+            <h2 className="mb-4 text-2xl font-semibold">
+                Restaurant Preferences
+            </h2>
 
             <div className="mb-4">
                 <div>Longitude: {currentPosition?.coords.longitude}</div>
                 <div>Latitude: {currentPosition?.coords.latitude}</div>
             </div>
+            <div className="bg-sky-700 px-4 py-2 text-white hover:bg-sky-800 sm:px-8 sm:py-3"></div>
 
             <form>
                 <div className="mb-4">
-                    <label className="block mb-2">How much are you willing to spend on the meal? </label>
+                    <label className="mb-2 block">
+                        How much are you willing to spend on the meal?{' '}
+                    </label>
                     <input
                         type="text"
                         value={budget}
                         onChange={(e) => setBudget(e.target.value)}
-                        className="border border-gray-300 px-2 py-1 rounded w-full"
+                        className="w-full rounded border border-gray-300 px-2 py-1"
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block mb-2">How far are you willing to travel? </label>
+                    <label className="mb-2 block">
+                        How far are you willing to travel?{' '}
+                    </label>
                     <input
                         type="text"
                         value={distance}
                         onChange={(e) => setDistance(e.target.value)}
-                        className="border border-gray-300 px-2 py-1 rounded w-full"
+                        className="w-full rounded border border-gray-300 px-2 py-1"
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block mb-2">What time do you want to visit the restaurant? </label>
+                    <label className="mb-2 block">
+                        What time do you want to visit the restaurant?{' '}
+                    </label>
                     <input
                         type="text"
                         value={time}
                         onChange={(e) => setTime(e.target.value)}
-                        className="border border-gray-300 px-2 py-1 rounded w-full"
+                        className="w-full rounded border border-gray-300 px-2 py-1"
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block mb-2">Do you have any dietary preferences?</label>
+                    <label className="mb-2 block">
+                        Do you have any dietary preferences?
+                    </label>
                     <div className="space-y-2">
                         <label className="flex items-center">
                             <input
                                 type="checkbox"
                                 value="Vegetarian"
-                                checked={dietaryPreferences.includes("Vegetarian")}
+                                checked={dietaryPreferences.includes(
+                                    'Vegetarian'
+                                )}
                                 onChange={handleDietaryPreferenceChange}
                                 className="mr-2"
                             />
@@ -104,7 +126,7 @@ function UserFilter({ notifications, setNotifications }: Props) {
                             <input
                                 type="checkbox"
                                 value="Vegan"
-                                checked={dietaryPreferences.includes("Vegan")}
+                                checked={dietaryPreferences.includes('Vegan')}
                                 onChange={handleDietaryPreferenceChange}
                                 className="mr-2"
                             />
@@ -114,7 +136,7 @@ function UserFilter({ notifications, setNotifications }: Props) {
                             <input
                                 type="checkbox"
                                 value="Seafood"
-                                checked={dietaryPreferences.includes("Seafood")}
+                                checked={dietaryPreferences.includes('Seafood')}
                                 onChange={handleDietaryPreferenceChange}
                                 className="mr-2"
                             />
@@ -124,7 +146,9 @@ function UserFilter({ notifications, setNotifications }: Props) {
                             <input
                                 type="checkbox"
                                 value="Gluten-free"
-                                checked={dietaryPreferences.includes("Gluten-free")}
+                                checked={dietaryPreferences.includes(
+                                    'Gluten-free'
+                                )}
                                 onChange={handleDietaryPreferenceChange}
                                 className="mr-2"
                             />
@@ -132,12 +156,16 @@ function UserFilter({ notifications, setNotifications }: Props) {
                         </label>
                     </div>
                 </div>
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" onClick={submitForm}>
+                <button
+                    type="submit"
+                    className="rounded bg-blue-500 px-4 py-2 text-white"
+                    onClick={submitForm}
+                >
                     Submit
                 </button>
             </form>
         </div>
-    );
+    )
 }
 
-export default UserFilter;
+export default UserFilter
