@@ -1,13 +1,18 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 import datetime
 import pytz
 from dotenv import load_dotenv
 import os
 import openai
+from pydantic import BaseModel
+from typing import List
+from starlette.responses import FileResponse
 
+## Load environment variables
 load_dotenv()
-app = FastAPI()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 yelp_api_key = os.getenv("YELP_API_KEY")
@@ -16,36 +21,70 @@ yelp_base_url = "https://api.yelp.com/v3/"
 tz = pytz.timezone("America/Los_Angeles")
 
 
+## Define models
+class UserInput(BaseModel):
+    # class Position:
+    #     longitude: float
+    #     latitude: float
+
+    price: int
+    radius: int
+    date: int
+    dietary_preferences: List[str]
+
+
+## Define apps
+app = FastAPI(title="main app")
+api_app = FastAPI(title="api app")
+origins = ["http://localhost:8000"]
+api_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.mount("/api", api_app)
+app.mount("/", StaticFiles(directory="../dist", html=True), name="ui")
+
+
+## MAIN APP
 @app.get("/")
-async def root():
+async def read_index():
+    return FileResponse("../dist/index.html")
+
+
+## API APP
+@api_app.get("/")
+async def test():
     return {"message": "Hello World"}
 
 
-## YELP API
-@app.get("/businesses")
-async def get_businesses():
+@api_app.post("/businesses")
+async def get_businesses(input: UserInput):
     search_url = f"{yelp_base_url}businesses/search"
-    dt = datetime.datetime(2023, 10, 27, 12, 30, tzinfo=tz)
     headers = {
         "accept": "application/json",
         "Authorization": f"Bearer {yelp_api_key}",
     }
     payload = {
         "term": "food",
-        "location": "San Francisco",  ## either location or latitude + longitude is required for call
-        "price": [1, 2, 3],
-        "radius": 2000,
-        "open_at": int(dt.timestamp()),
+        "longitude": 60,
+        "latitude": 60,
+        "price": [1],
+        "radius": 1000,
+        "open_at": 1698506270,
     }
     response = requests.get(search_url, headers=headers, params=payload)
     if response.ok:
         return response.json()
     else:
+        print(response.text)
         return {"error": response.status_code}
 
 
 ## OPENAI API
-@app.get("/ai_prompts")
+@api_app.get("/ai_prompts")
 async def get_ai_prompts():
     user_prompt = "Your goal is to narrow down the list of restaurants by generating a few questions for the user to answer to decide the most suitable restaurant. The questions should not include budget, distance to travel, time for the meal and dietary preferences. List of restaurants: Tartine Bakery, Zuni Café, State Bird Provisions, Nopa, Gary Danko, Swan Oyster Depot, Tadich Grill, Benu, Liholiho Yacht Club, House of Prime Rib, The Slanted Door, La Taqueria, El Farolito, Flour + Water, Burma Superstar, Foreign Cinema, Saison, Angler, Atelier Crenn"
     messages = [
@@ -97,3 +136,8 @@ async def get_ai_prompts():
     print(response)
     print(response_message)
     return {"message": "Get AI prompts"}
+
+
+## HELPERS
+def enumerate_to(price: int):
+    return [i for i in range(1, price + 1)]

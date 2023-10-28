@@ -49,6 +49,24 @@ function UserFilter() {
         );
     }, []);
 
+    async function submitForm() {
+        const input: UserInput = {
+            price: Number(budget),
+            radius: Number(distance),
+            date: Number(time),
+            dietary_preferences: dietaryPreferences,
+        }
+        event?.preventDefault()
+        const response = await fetch('http://127.0.0.1:8000/api/businesses', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(input)
+        }).then(response => console.log(response.json()))
+        console.log(response)
+    }   
+
     return (
         <div className="bg-gray-100 p-8 rounded-lg shadow-md">
             {locationError ? LocationRequired(locationError) : null}
@@ -132,7 +150,7 @@ function UserFilter() {
                         </label>
                     </div>
                 </div>
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" onClick={submitForm}>
                     Submit
                 </button>
             </form>
