@@ -217,6 +217,7 @@ async def get_result(ai_input: AIInput):
     radius = ai_input.input.radius
     latitude = ai_input.input.latitude
     longitude = ai_input.input.longitude
+    date = unix_time_to_readable(ai_input.input.date)
 
     try:
         ## Get list of restaurants
@@ -236,7 +237,7 @@ async def get_result(ai_input: AIInput):
             }
             for business in yelp_response["businesses"]
         ]
-        user_prompt = f"Your goal is to narrow down the list of restaurants to a specific restaurant by asking the user questions using the information in JSON provided, 1 question at a time with at most 5 choices. The user wants to dine within {radius}m of coordinates ({latitude}, {longitude}) on Monday, 2pm. List of restaurants: {list_of_restaurants}. Information about each restaurant: {mapped_response}"
+        user_prompt = f"Your goal is to narrow down the list of restaurants to a specific restaurant by asking the user questions using the information in JSON provided, 1 question at a time with at most 5 choices. The user wants to dine within {radius}m of coordinates ({latitude}, {longitude}) on {date}. List of restaurants: {list_of_restaurants}. Information about each restaurant: {mapped_response}"
 
         ## Handle the case of final result after a conversation.
         ## Need to take in the conversation and give the final result.
@@ -299,3 +300,13 @@ async def get_result(ai_input: AIInput):
 ## HELPERS
 def enumerate_to(price: int):
     return [i for i in range(1, price + 1)]
+
+
+def unix_time_to_readable(unix_time):
+    # Convert Unix time to a datetime object
+    date_time = datetime.datetime.fromtimestamp(unix_time)
+
+    # Format the datetime object to a readable string format, if desired
+    readable_date = date_time.strftime("%Y-%m-%d %H:%M:%S")
+
+    return readable_date
