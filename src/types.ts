@@ -18,22 +18,13 @@ type UserInput = {
     dietary_preferences: string[]
 }
 
-type NotificationType = ErrorDetails
-    longitude: number;
-    latitude: number;
-    price: number;
-    radius: number;
-    date: number; // Unix timestamp
-    dietary_preferences: string[];
-};
-
 type GeoInput = {
-    address: string;
-    city: string;
-    state: string;
-};
+    address: string
+    city: string
+    state: string
+}
 
-type NotificationType = ErrorDetails;
+type NotificationType = ErrorDetails
 
 interface ErrorDetails {
     code: number
