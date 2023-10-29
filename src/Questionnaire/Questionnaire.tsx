@@ -53,7 +53,7 @@ function Questionnaire({
     choices,
     setChoices,
 }: Props) {
-    const haveResult = true
+    const haveResult = false
 
     function submitChoice(event: MouseEvent<HTMLButtonElement>) {
         event.preventDefault()

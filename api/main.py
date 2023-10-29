@@ -32,7 +32,6 @@ class UserInput(BaseModel):
     dietary_preferences: List[str]
 
 
-<<<<<<< HEAD
 
 class Message(BaseModel):
     role: str
@@ -54,17 +53,11 @@ class AIInput(BaseModel):
     messages: Optional[List[dict]] = None
 
 
-=======
->>>>>>> bbbae32 (merge)
 class GeoInput(BaseModel):
     address: str
     city: str
     state: str
 
-<<<<<<< HEAD
-
-=======
->>>>>>> bbbae32 (merge)
 ## Define apps
 app = FastAPI(title="main app")
 api_app = FastAPI(title="api app")
@@ -114,10 +107,7 @@ async def get_businesses(input: UserInput):
     else:
         print(response.text)
         return {"error": response.status_code}
-
-
-<<<<<<< HEAD
-<<<<<<< HEAD
+    
 ## GOOGLE GEOLOCATION API
 @api_app.post("/geolocation")
 
@@ -149,11 +139,7 @@ async def get_coordinates_forAddress(input: GeoInput):
     except Exception as e:
         print("Error fetching coordinates:", str(e))
         return None
-=======
-<<<<<<< HEAD
->>>>>>> bbbae32 (merge)
-=======
->>>>>>> 1516a33 (geographic location info adding)
+
 @api_app.post("/businesses/{id}")
 async def get_business(id: str):
     search_url = f"{yelp_base_url}businesses/{id}"
