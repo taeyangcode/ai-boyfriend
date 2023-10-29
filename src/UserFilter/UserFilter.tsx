@@ -18,8 +18,8 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
     const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
     const [latitude, setLatitude] = useState<string>('')
     const [longitude, setLongitude] = useState<string>('')
-    const [price, setPrice] = useState<string>('40')
-    const [budget, setBudget] = useState<number>(40)
+    const [price, setPrice] = useState<string>('')
+    const [budget, setBudget] = useState<number>(36)
     const [distance, setDistance] = useState<string>('1234')
     const [date, setDate] = useState<Date>(new Date())
     const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
@@ -124,7 +124,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
 
             <form>
                 <div className="mb-4">
-                    <label className="mb-2 block">Address Line </label>
+                    <label className="mb-4 mb-4 mt-8 block text-3xl">Address Line </label>
                     <input
                         type="text"
                         value={address}
@@ -134,7 +134,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                 </div>
 
                 <div className="mb-4">
-                    <label className="mb-2 block">City </label>
+                    <label className="mb-4 mt-8 block text-3xl">City </label>
                     <input
                         type="text"
                         value={city}
@@ -144,7 +144,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                 </div>
 
                 <div className="mb-4">
-                    <label className="mb-2 block">State </label>
+                    <label className="mb-4 mt-8 block text-3xl">State </label>
                     <input
                         type="text"
                         value={state}
@@ -159,13 +159,17 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
             </form>
 
             <form>
-                <div className="mb-4 mt-20">
-                    <label className="mb-2 block">How much are you willing to spend on the meal (per person)? </label>
+                <div className="mt-20">
+                    <div className="mb-4 flex">
+                        <label className="text-3xl">How much are you willing to spend on the meal (per person)? </label>
+                        <div className="ml-16 text-3xl font-bold text-red-600">${budget}</div>
+                    </div>
                     <div className="flex">
+                        <span>$5</span>
                         <input
                             type="range"
-                            min="0"
-                            max="100"
+                            min="5"
+                            max="70"
                             step="5"
                             value={budget}
                             onChange={(e) => {
@@ -183,14 +187,14 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                                 setBudget(budgetValue)
                                 setPrice(price)
                             }}
-                            className="w-1/3 rounded border border-gray-300 py-1"
+                            className="mx-5 w-1/2 rounded border border-gray-300 py-1"
                         />
-                        <div className="ml-14">${budget}</div>
+                        <span>$70</span>
                     </div>
                 </div>
 
                 <div className="mb-4">
-                    <label className="mb-2 block">How far are you willing to travel? </label>
+                    <label className="mb-4 mt-8 block text-3xl">How far are you willing to travel? </label>
                     <input
                         type="text"
                         value={distance}
@@ -199,7 +203,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="mb-2 block">What time do you want to visit the restaurant? </label>
+                    <label className="mb-4 mt-8 block text-3xl">What time do you want to visit the restaurant? </label>
                     <DatePicker
                         selected={date}
                         dateFormat="MMMM d, yyyy h:mm aa"
@@ -212,7 +216,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                         fixedHeight
                         inline
                     />
-                    {/* <label className="mb-2 block">What time do you want to visit the restaurant? </label>
+                    {/* <label className="mb-4 block">What time do you want to visit the restaurant? </label>
                     <input
                         type="text"
                         value={time}
@@ -221,7 +225,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                     /> */}
                 </div>
                 <div className="mb-4">
-                    <label className="mb-2 block">Do you have any dietary preferences?</label>
+                    <label className="mb-4 mt-8 block text-3xl">Do you have any dietary preferences?</label>
                     <div className="space-y-2">
                         <label className="flex items-center">
                             <input
