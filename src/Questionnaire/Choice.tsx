@@ -25,7 +25,7 @@ function Choice({
 }: Props) {
     return (
         <div
-            className="rounded-3xl hover:bg-gray-100"
+            className="rounded-3xl bg-gradient-to-r from-blue-300 to-blue-500 text-white transition duration-700 ease-in-out hover:from-orange-500 hover:to-orange-300"
             onClick={() => {
                 setSelectedChoices([choiceText])
                 appendResponse(responseChain!, [...selectedChoices, choiceText])
@@ -34,9 +34,9 @@ function Choice({
                 changePage('questionnaire', responseChain!)
             }}
         >
-            <li key={choiceText} className="mb-8 cursor-pointer p-2">
+            <li key={choiceText} className="mb-8 flex cursor-pointer justify-end px-8 py-4">
                 <label className="inline-flex items-center">
-                    <span className="ml-2 text-xl">{choiceText}</span>
+                    <span className="ml-2 text-2xl">{choiceText}</span>
                 </label>
             </li>
         </div>

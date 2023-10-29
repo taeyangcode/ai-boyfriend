@@ -31,8 +31,8 @@ function QuestionScreen({
     const [selectedChoices, setSelectedChoices] = useState<Array<string>>([])
 
     return (
-        <div>
-            <div className="items-center justify-center">
+        <div className="flex justify-center">
+            <div className="w-1/2 items-center justify-center">
                 <h2 className="mb-4 flex justify-center pt-10 text-7xl font-bold italic text-white"> Come babe, let me help you decide</h2>
 
                 <div className="mt-20 justify-center rounded-3xl bg-white">

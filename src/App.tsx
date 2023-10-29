@@ -7,7 +7,7 @@ import '../src/index.css'
 
 function App() {
     const [notifications, setNotifications] = useState<Array<NotificationType>>([])
-    const [selectedPage, setSelectedPage] = useState<Page>('result')
+    const [selectedPage, setSelectedPage] = useState<Page>('preference')
     const [responseChain, setResponseChain] = useState<ResponseChain>()
     console.log('responseChain: ', responseChain)
 
