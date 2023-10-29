@@ -58,42 +58,55 @@ function UserFilter({
     }, [])
 
     async function submitForm(event: MouseEvent<HTMLButtonElement>) {
+        event.preventDefault() // Prevent page from refreshing
+
         const input: UserInput = {
-            longitude: Number(currentPosition?.coords.longitude),
-            latitude: Number(currentPosition?.coords.latitude),
-            price: Number(budget),
-            radius: Number(distance),
-            date: Number(time),
-            dietary_preferences: dietaryPreferences,
-        }
-        event.preventDefault()
-        const response = await fetch('http://127.0.0.1:8000/api/get_result', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
+            input: {
+                longitude: Number(currentPosition?.coords.longitude),
+                latitude: Number(currentPosition?.coords.latitude),
+                price: Number(budget),
+                radius: Number(distance),
+                date: Number(time),
+                dietary_preferences: dietaryPreferences,
             },
-            body: JSON.stringify(input),
-        })
-        const json = await response.json()
-        console.log(json)
+        }
+
+        // First response to check if there is already a result
+        // If have_result is false, we continue to get more questions to ask the user to narrow down the list of restaurants
+        const initialResponse = await fetch(
+            'http://127.0.0.1:8000/api/get_result',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(input),
+            }
+        )
+        const initialResponseJson = await initialResponse.json()
+        console.log(initialResponseJson)
         console.log('separator')
-        console.log(json['messages'])
-        console.log(typeof json['messages'])
+        console.log(initialResponseJson['messages'])
+        console.log(typeof initialResponseJson['messages'])
 
         // Show results page if result is found; Go through questionnaire if not;
         const haveResult =
-            json['latest_response']['function_call']['arguments']['have_result']
+            initialResponseJson['latest_response']['function_call'][
+                'arguments'
+            ]['have_result']
 
         if (haveResult) {
-            // send restaurant id to get_result endpoint
+            // Send restaurant id to result page
             const restaurantId = [
-                json['latest_response']['function_call']['arguments']['result'],
+                initialResponseJson['latest_response']['function_call'][
+                    'arguments'
+                ]['result'],
             ]
             setRestaurantId(restaurantId)
             changePage('result')
         } else {
-            // Get questions and choices from diff endpoint
-            const response2 = await fetch(
+            // Get questions and choices from get_question endpoint
+            const response = await fetch(
                 'http://127.0.0.1:8000/api/get_question',
                 {
                     method: 'POST',
@@ -101,18 +114,17 @@ function UserFilter({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        messages: json['messages'],
+                        messages: initialResponseJson['messages'],
                     }),
                 }
             )
-            const json2 = await response2.json()
-            console.log(json2)
+            const responseJson = await response.json()
+            console.log(responseJson)
 
             // Store response of question and choice
-            const json3 = JSON.parse(
-                json2['latest_response']['function_call']['arguments']
+            const questionAndChoices = JSON.parse(
+                responseJson['latest_response']['function_call']['arguments']
             )
-            const questionAndChoices = json3['question']
             setQuestion(questionAndChoices['question'])
             setChoices(questionAndChoices['choices'])
 
