@@ -10,16 +10,19 @@ interface Props {
     setRestaurantId: (value: Array<string>) => void
 }
 
-function UserFilter({
-    notifications,
-    setNotifications,
-    changePage,
-    setQuestion,
-    setChoices,
-    setRestaurantId,
-}: Props) {
-    const [currentPosition, setCurrentPosition] =
-        useState<GeolocationPosition>()
+function checkResult(json: Type1) {
+    const have_result = json['latest_response']['function_call']['arguments']['have_result']
+    return have_result
+}
+
+function showResult(json: Type2, setRestaurantId: (value: Array<string>) => void, changePage: (newPage: Page) => void) {
+    const restaurantId = [json['latest_response']['function_call']['arguments']['result']]
+    setRestaurantId(restaurantId)
+    changePage('result')
+}
+
+function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
+    const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
 
     const [latitude, setLatitude] = useState<string>('')
     const [longitude, setLongitude] = useState<string>('')
@@ -32,27 +35,19 @@ function UserFilter({
     const [city, setCity] = useState<string>('')
     const [state, setState] = useState<string>('')
 
-    const handleDietaryPreferenceChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleDietaryPreferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = event.target
         if (checked) {
             setDietaryPreferences([...dietaryPreferences, value])
         } else {
-            setDietaryPreferences(
-                dietaryPreferences.filter((pref) => pref !== value)
-            )
+            setDietaryPreferences(dietaryPreferences.filter((pref) => pref !== value))
         }
     }
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (position) => setCurrentPosition(position),
-            (error) =>
-                setNotifications([
-                    ...notifications,
-                    { code: error.code, message: error.message },
-                ]),
+            (error) => setNotifications([...notifications, { code: error.code, message: error.message }]),
             { timeout: 30000 }
         )
     }, [])
@@ -75,43 +70,26 @@ function UserFilter({
             body: JSON.stringify(input),
         })
         const json = await response.json()
-        console.log(json)
-        console.log('separator')
-        console.log(json['messages'])
-        console.log(typeof json['messages'])
 
         // Show results page if result is found; Go through questionnaire if not;
-        const haveResult =
-            json['latest_response']['function_call']['arguments']['have_result']
-
-        if (haveResult) {
-            // send restaurant id to get_result endpoint
-            const restaurantId = [
-                json['latest_response']['function_call']['arguments']['result'],
-            ]
-            setRestaurantId(restaurantId)
-            changePage('result')
+        if (checkResult(json)) {
+            showResult(json, setRestaurantId, changePage)
         } else {
             // Get questions and choices from diff endpoint
-            const response2 = await fetch(
-                'http://127.0.0.1:8000/api/get_question',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        messages: json['messages'],
-                    }),
-                }
-            )
+            const response2 = await fetch('http://127.0.0.1:8000/api/get_question', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    messages: json['messages'],
+                }),
+            })
             const json2 = await response2.json()
             console.log(json2)
 
             // Store response of question and choice
-            const json3 = JSON.parse(
-                json2['latest_response']['function_call']['arguments']
-            )
+            const json3 = JSON.parse(json2['latest_response']['function_call']['arguments'])
             const questionAndChoices = json3['question']
             setQuestion(questionAndChoices['question'])
             setChoices(questionAndChoices['choices'])
@@ -137,16 +115,13 @@ function UserFilter({
             state: state,
         }
         try {
-            const response = await fetch(
-                'http://127.0.0.1:8000/api/geolocation',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(geographicInfo),
-                }
-            )
+            const response = await fetch('http://127.0.0.1:8000/api/geolocation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(geographicInfo),
+            })
 
             if (response.ok) {
                 const latlong_response = await response.json()
@@ -163,9 +138,7 @@ function UserFilter({
 
     return (
         <div className="rounded-lg bg-gray-100 p-8 shadow-md">
-            <h2 className="mb-4 text-2xl font-semibold">
-                Restaurant Preferences
-            </h2>
+            <h2 className="mb-4 text-2xl font-semibold">Restaurant Preferences</h2>
 
             <div className="mb-4">
                 <div>Longitude: {longitude} </div>
@@ -203,20 +176,14 @@ function UserFilter({
                     />
                 </div>
 
-                <button
-                    type="submit"
-                    className="rounded bg-blue-500 px-4 py-2 text-white"
-                    onClick={submitAddress}
-                >
+                <button type="submit" className="rounded bg-blue-500 px-4 py-2 text-white" onClick={submitAddress}>
                     Get Geographic Information
                 </button>
             </form>
 
             <form>
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        How much are you willing to spend on the meal?{' '}
-                    </label>
+                    <label className="mb-2 block">How much are you willing to spend on the meal? </label>
                     <input
                         type="text"
                         value={budget}
@@ -225,9 +192,7 @@ function UserFilter({
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        How far are you willing to travel?{' '}
-                    </label>
+                    <label className="mb-2 block">How far are you willing to travel? </label>
                     <input
                         type="text"
                         value={distance}
@@ -236,9 +201,7 @@ function UserFilter({
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        What time do you want to visit the restaurant?{' '}
-                    </label>
+                    <label className="mb-2 block">What time do you want to visit the restaurant? </label>
                     <input
                         type="text"
                         value={time}
@@ -247,17 +210,13 @@ function UserFilter({
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        Do you have any dietary preferences?
-                    </label>
+                    <label className="mb-2 block">Do you have any dietary preferences?</label>
                     <div className="space-y-2">
                         <label className="flex items-center">
                             <input
                                 type="checkbox"
                                 value="Vegetarian"
-                                checked={dietaryPreferences.includes(
-                                    'Vegetarian'
-                                )}
+                                checked={dietaryPreferences.includes('Vegetarian')}
                                 onChange={handleDietaryPreferenceChange}
                                 className="mr-2"
                             />
@@ -287,9 +246,7 @@ function UserFilter({
                             <input
                                 type="checkbox"
                                 value="Gluten-free"
-                                checked={dietaryPreferences.includes(
-                                    'Gluten-free'
-                                )}
+                                checked={dietaryPreferences.includes('Gluten-free')}
                                 onChange={handleDietaryPreferenceChange}
                                 className="mr-2"
                             />
@@ -297,11 +254,7 @@ function UserFilter({
                         </label>
                     </div>
                 </div>
-                <button
-                    type="submit"
-                    className="rounded bg-blue-500 px-4 py-2 text-white"
-                    onClick={submitForm}
-                >
+                <button type="submit" className="rounded bg-blue-500 px-4 py-2 text-white" onClick={submitForm}>
                     Submit
                 </button>
             </form>

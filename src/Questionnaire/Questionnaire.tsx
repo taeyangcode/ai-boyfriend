@@ -16,12 +16,10 @@ function QuestionScreen({ question, choices }: Props) {
 
     return (
         <div className="rounded-lg bg-gray-100 p-8 shadow-md">
-            <h2 className="mb-4 text-2xl font-semibold">
-                Babe, let me help you to decide 😉
-            </h2>
+            <h2 className="mb-4 text-2xl font-semibold">Babe, let me help you to decide 😉</h2>
 
-            <div className="flex">
-                <div className="w-1/2 p-4">
+            <div className="mt-20 flex">
+                <div>
                     <Question question={question} />
                 </div>
                 <div className="w-1/2 p-4">
@@ -29,12 +27,7 @@ function QuestionScreen({ question, choices }: Props) {
                         {choices.map((choice) => (
                             <li key={choice} className="mb-2">
                                 <label className="inline-flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="form-radio-custom"
-                                        name="question-options"
-                                        value={choice}
-                                    />
+                                    <input type="radio" className="form-radio-custom" name="question-options" value={choice} />
                                     <span className="ml-2">{choice}</span>
                                 </label>
                             </li>
@@ -46,13 +39,7 @@ function QuestionScreen({ question, choices }: Props) {
     )
 }
 
-function Questionnaire({
-    changePage,
-    question,
-    setQuestion,
-    choices,
-    setChoices,
-}: Props) {
+function Questionnaire({ changePage, question, setQuestion, choices, setChoices }: Props) {
     const haveResult = false
 
     function submitChoice(event: MouseEvent<HTMLButtonElement>) {
@@ -73,11 +60,7 @@ function Questionnaire({
             ) : (
                 <>
                     <div>Alright I have something for you ❤️</div>
-                    <button
-                        type="submit"
-                        className="rounded bg-blue-500 px-4 py-2 text-white"
-                        onClick={submitChoice}
-                    >
+                    <button type="submit" className="rounded bg-blue-500 px-4 py-2 text-white" onClick={submitChoice}>
                         Show me
                     </button>
                 </>
