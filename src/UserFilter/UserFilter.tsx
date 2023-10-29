@@ -14,11 +14,11 @@ interface Props {
 function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
     const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
 
-    const [latitude, setLatitude] = useState<string>('')
-    const [longitude, setLongitude] = useState<string>('')
-    const [budget, setBudget] = useState<string>('')
-    const [distance, setDistance] = useState<string>('')
-    const [time, setTime] = useState<string>('')
+    const [latitude, setLatitude] = useState<string>('-118.3884078')
+    const [longitude, setLongitude] = useState<string>('33.8491816')
+    const [budget, setBudget] = useState<string>('2')
+    const [distance, setDistance] = useState<string>('3000')
+    const [time, setTime] = useState<string>('1698639245')
     const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
 
     const [address, setAddress] = useState<string>('')

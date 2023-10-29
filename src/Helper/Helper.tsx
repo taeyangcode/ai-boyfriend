@@ -32,10 +32,6 @@ export async function getNextQuestion(initialResponseJson: ResponseChain, questi
     console.log('choices: ', questionResponse['choices'])
 }
 
-export appendResponse(json: Type2) {
+export function appendResponse(json: Type2) {}
 
-}
-
-export sendResponse(json: Type2) {
-
-}
+export function sendResponse(json: Type2) {}
