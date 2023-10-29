@@ -5,7 +5,7 @@ interface Props {
 }
 
 function Question({ question }: Props) {
-    return <h1>{question}</h1>
+    return <div>{question}</div>
 }
 
 export default Question

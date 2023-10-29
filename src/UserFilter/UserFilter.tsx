@@ -67,8 +67,12 @@ function UserFilter({
         })
         const json = await response.json()
         console.log(json)
-        console.log('separator')
-        console.log(json['businesses'][0])
+
+        // temporary
+        const question = json['businesses'][0]['name']
+        setQuestion(question)
+        const choices = ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4']
+        setChoices(choices)
 
         // // Store response of question and choice
         // const questionAndChoices = json['function_call']['question']
