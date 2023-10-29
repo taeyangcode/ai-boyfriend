@@ -21,9 +21,32 @@ function showResult(json: ResponseChain, setRestaurantId: (value: Array<string>)
     changePage('result')
 }
 
-// function getNextQuestion(json: Type1) {
+async function getNextQuestion(
+    initialResponseJson: ResponseChain,
+    setQuestion: (value: string) => void,
+    setChoices: (value: Array<string>) => void
+) {
+    // Get questions and choices from get_question endpoint
+    const response = await fetch('http://127.0.0.1:8000/api/get_question', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            messages: initialResponseJson['messages'],
+        }),
+    })
+    const responseJson = await response.json()
+    console.log(responseJson)
 
-// }
+    // Store response of question and choice
+    const questionAndChoices = JSON.parse(responseJson['latest_response']['function_call']['arguments'])
+    setQuestion(questionAndChoices['question'])
+    setChoices(questionAndChoices['choices'])
+
+    console.log('question: ', questionAndChoices['question'])
+    console.log('choices: ', questionAndChoices['choices'])
+}
 
 function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
     const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
@@ -52,12 +75,14 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
         event.preventDefault() // Prevent page from refreshing
 
         const input: UserInput = {
-            longitude: Number(longitude),
-            latitude: Number(latitude),
-            price: Number(budget),
-            radius: Number(distance),
-            date: Number(time),
-            dietary_preferences: dietaryPreferences,
+            input: {
+                longitude: Number(longitude),
+                latitude: Number(latitude),
+                price: Number(budget),
+                radius: Number(distance),
+                date: Number(time),
+                dietary_preferences: dietaryPreferences,
+            },
         }
 
         // First response to check if there is already a result
@@ -75,28 +100,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
         if (checkResult(initialResponseJson)) {
             showResult(initialResponseJson, setRestaurantId, changePage)
         } else {
-            // Get questions and choices from get_question endpoint
-            const response = await fetch('http://127.0.0.1:8000/api/get_question', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    messages: initialResponseJson['messages'],
-                }),
-            })
-            const responseJson = await response.json()
-            console.log(responseJson)
-
-            // Store response of question and choice
-            const questionAndChoices = JSON.parse(responseJson['latest_response']['function_call']['arguments'])
-            setQuestion(questionAndChoices['question'])
-            setChoices(questionAndChoices['choices'])
-
-            console.log('question: ', questionAndChoices['question'])
-            console.log('choices: ', questionAndChoices['choices'])
-
-            // Change page
+            getNextQuestion(initialResponseJson, setQuestion, setChoices)
             changePage('questionnaire')
         }
     }

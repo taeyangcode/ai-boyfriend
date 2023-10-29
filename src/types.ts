@@ -10,12 +10,14 @@ type FoodCategory = 'vegetarian' | 'vegan' | 'seafood' | 'gluten_free'
 type Page = 'preference' | 'questionnaire' | 'result'
 
 type UserInput = {
-    longitude: number
-    latitude: number
-    price: number
-    radius: number
-    date: number // Unix timestamp
-    dietary_preferences: string[]
+    input: {
+        longitude: number
+        latitude: number
+        price: number
+        radius: number
+        date: number // Unix timestamp
+        dietary_preferences: string[]
+    }
 }
 
 type AIInput = {
