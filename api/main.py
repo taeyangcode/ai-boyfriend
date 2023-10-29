@@ -16,6 +16,7 @@ load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 yelp_api_key = os.getenv("YELP_API_KEY")
+googleGeoLoc_api_key = os.getenv("GOOGLE_MAPS_API_KEY")
 
 yelp_base_url = "https://api.yelp.com/v3/"
 tz = pytz.timezone("America/Los_Angeles")
@@ -29,6 +30,7 @@ class UserInput(BaseModel):
     radius: int
     date: int
     dietary_preferences: List[str]
+
 
 
 class Message(BaseModel):
@@ -49,6 +51,12 @@ class Messages(BaseModel):
 class AIInput(BaseModel):
     input: UserInput
     messages: Optional[List[dict]] = None
+
+
+class GeoInput(BaseModel):
+    address: str
+    city: str
+    state: str
 
 
 ## Define apps
@@ -102,6 +110,37 @@ async def get_businesses(input: UserInput):
         return {"error": response.status_code}
 
 
+## GOOGLE GEOLOCATION API
+@api_app.post("/geolocation")
+
+async def get_coordinates_forAddress(input: GeoInput):
+    api_url = "https://maps.googleapis.com/maps/api/geocode/json"
+
+    params = {
+        "address": input.address + ", " + input.city + ", " + input.state,
+        "key": googleGeoLoc_api_key,
+    }
+
+    try:
+        response = requests.get(api_url, params=params)
+        data = response.json()
+            
+        print("DEBUG") 
+        print(data)
+        print("DEBUG")
+        if data.get("status") == "OK":
+
+            result = data["results"][0]
+            location = result["geometry"]["location"]
+            lat = location["lat"]
+            lng = location["lng"]
+            return {"lat": lat, "lng": lng}
+        else:
+            return None
+
+    except Exception as e:
+        print("Error fetching coordinates:", str(e))
+        return None
 @api_app.post("/businesses/{id}")
 async def get_business(id: str):
     search_url = f"{yelp_base_url}businesses/{id}"
@@ -369,6 +408,8 @@ async def get_ai_prompts(ai_input: AIInput):
         "messages": messages,
         "yelp_response_mapped": mapped_response,
     }
+
+
 
 
 ## HELPERS
