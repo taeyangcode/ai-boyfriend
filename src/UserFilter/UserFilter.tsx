@@ -10,16 +10,20 @@ interface Props {
     setRestaurantId: (value: Array<string>) => void
 }
 
-function checkResult(json: Type1) {
+function checkResult(json: ResponseChain) {
     const have_result = json['latest_response']['function_call']['arguments']['have_result']
     return have_result
 }
 
-function showResult(json: Type2, setRestaurantId: (value: Array<string>) => void, changePage: (newPage: Page) => void) {
+function showResult(json: ResponseChain, setRestaurantId: (value: Array<string>) => void, changePage: (newPage: Page) => void) {
     const restaurantId = [json['latest_response']['function_call']['arguments']['result']]
     setRestaurantId(restaurantId)
     changePage('result')
 }
+
+// function getNextQuestion(json: Type1) {
+
+// }
 
 function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
     const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
@@ -66,10 +70,6 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
             body: JSON.stringify(input),
         })
         const initialResponseJson = await initialResponse.json()
-        console.log(initialResponseJson)
-        console.log('separator')
-        console.log(initialResponseJson['messages'])
-        console.log(typeof initialResponseJson['messages'])
 
         // Show results page if result is found; Go through questionnaire if not;
         if (checkResult(initialResponseJson)) {

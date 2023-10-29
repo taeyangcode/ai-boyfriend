@@ -10,14 +10,12 @@ type FoodCategory = 'vegetarian' | 'vegan' | 'seafood' | 'gluten_free'
 type Page = 'preference' | 'questionnaire' | 'result'
 
 type UserInput = {
-    input: {
-        longitude: number
-        latitude: number
-        price: number
-        radius: number
-        date: number // Unix timestamp
-        dietary_preferences: string[]
-    }
+    longitude: number
+    latitude: number
+    price: number
+    radius: number
+    date: number // Unix timestamp
+    dietary_preferences: string[]
 }
 
 type AIInput = {
@@ -57,7 +55,10 @@ interface AssistantResponse {
     content: null
     function_call: {
         name: string
-        arguments: string
+        arguments: {
+            have_result: boolean,
+            result: string,
+        }
     }
 }
 
