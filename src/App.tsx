@@ -8,8 +8,16 @@ function App() {
     const [notifications, setNotifications] = useState<Array<NotificationType>>(
         []
     )
-    const [selectedPage, setSelectedPage] = useState<Page>('result')
+    const [selectedPage, setSelectedPage] = useState<Page>('preference')
 
+    // Questions and choices for questionnaire page
+    const [question, setQuestion] = useState<string>('Sample Question')
+    const [choices, setChoices] = useState<Array<string>>([])
+
+    // ID for result page
+    const [restaurantId, setRestaurantId] = useState<Array<string>>([])
+
+    // function to change pages; passed into all components as props
     const changePage = (newPage: Page) => {
         setSelectedPage(newPage)
     }
@@ -22,10 +30,20 @@ function App() {
                         notifications={notifications}
                         setNotifications={setNotifications}
                         changePage={changePage}
+                        setQuestion={setQuestion}
+                        setChoices={setChoices}
                     />
                 )
             case 'questionnaire':
-                return <Questionnaire />
+                return (
+                    <Questionnaire
+                        changePage={changePage}
+                        question={question}
+                        setQuestion={setQuestion}
+                        choices={choices}
+                        setChoices={setChoices}
+                    />
+                )
             case 'result':
                 return (
                     <Result
@@ -38,7 +56,7 @@ function App() {
             default:
                 return (
                     <>
-                        <h1>Page not found</h1>
+                        <h1>404 Page not found</h1>
                     </>
                 )
         }

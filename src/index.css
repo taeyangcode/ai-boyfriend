@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.form-radio-custom {
+    width: 20px; /* Set the desired width for the radio button */
+    height: 20px; /* Set the desired height for the radio button */
+    border: 2px solid #4299e1; /* Border color of the radio button */
+    border-radius: 4px; /* Border radius to make it rectangular */
+    appearance: none; /* Remove the default radio button appearance */
+    outline: none; /* Remove outline when focused */
+    transition: border 0.3s; /* Add a smooth transition on hover */
+}
+
+.form-radio-custom:checked {
+    background-color: #4299e1; /* Background color when checked */
+    border-color: #4299e1; /* Border color when checked */
+}
+
+/* Style the radio button label text when checked */
+.form-radio-custom:checked + span {
+    color: #4299e1;
+}

@@ -5,15 +5,30 @@ interface Props {
     notifications: Array<NotificationType>
     setNotifications: (value: Array<NotificationType>) => void
     changePage: (newPage: Page) => void
+    setQuestion: (value: string) => void
+    setChoices: (value: Array<string>) => void
 }
 
-function UserFilter({ notifications, setNotifications, changePage }: Props) {
+function UserFilter({
+    notifications,
+    setNotifications,
+    changePage,
+    setQuestion,
+    setChoices,
+}: Props) {
     const [currentPosition, setCurrentPosition] =
         useState<GeolocationPosition>()
+
+    const [latitude, setLatitude] = useState<string>('')
+    const [longitude, setLongitude] = useState<string>('')
     const [budget, setBudget] = useState<string>('')
     const [distance, setDistance] = useState<string>('')
     const [time, setTime] = useState<string>('')
     const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
+
+    const [address, setAddress] = useState<string>('')
+    const [city, setCity] = useState<string>('')
+    const [state, setState] = useState<string>('')
 
     const handleDietaryPreferenceChange = (
         event: React.ChangeEvent<HTMLInputElement>
@@ -60,8 +75,54 @@ function UserFilter({ notifications, setNotifications, changePage }: Props) {
         const json = await response.json()
         console.log(json)
 
+        // temporary
+        const question = json['businesses'][0]['name']
+        setQuestion(question)
+        const choices = ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4']
+        setChoices(choices)
+
+        // // Store response of question and choice
+        // const questionAndChoices = json['function_call']['question']
+        // setQuestion(questionAndChoices['question'])
+        // setChoices(questionAndChoices['choices'])
+
         // Change page
         changePage('questionnaire')
+    }
+
+    async function submitAddress() {
+        event?.preventDefault()
+        if (!address || !city || !state) {
+            alert("Invalid address, city, or state")    
+            return 
+        }
+        
+        const geographicInfo: GeoInput = {
+            address: (address),
+            city: (city),
+            state: (state)
+        }
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/geolocation', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(geographicInfo),
+            });
+
+          
+            if (response.ok) {
+              const latlong_response = await response.json();
+              setLatitude(latlong_response.lat);
+              setLongitude(latlong_response.lng);
+            } else {
+              // Handle errors here, e.g., response.status and response.statusText
+              console.error('Error:', response.status, response.statusText);
+            }
+          } catch (error) {
+            console.error('Error fetching coordinates:', error);
+          }
     }
 
     return (
@@ -71,9 +132,57 @@ function UserFilter({ notifications, setNotifications, changePage }: Props) {
             </h2>
 
             <div className="mb-4">
-                <div>Longitude: {currentPosition?.coords.longitude}</div>
-                <div>Latitude: {currentPosition?.coords.latitude}</div>
+                <div>Longitude: {longitude} </div>
+                <div>Latitude: {latitude}</div>
             </div>
+
+            <form>
+                <div className="mb-4">
+                    <label className="mb-2 block">
+                        Address Line {' '}
+                    </label>
+                    <input
+                        type="text"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="w-full rounded border border-gray-300 px-2 py-1"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label className="mb-2 block">
+                        City{' '}
+                    </label>
+                    <input
+                        type="text"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className="w-full rounded border border-gray-300 px-2 py-1"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label className="mb-2 block">
+                        State{' '}
+                    </label>
+                    <input
+                        type="text"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                        className="w-full rounded border border-gray-300 px-2 py-1"
+                    />
+                </div>
+
+                <button
+                    type="submit"
+                    className="rounded bg-blue-500 px-4 py-2 text-white"
+                    onClick={submitAddress}
+                >
+                    Get Geographic Information
+                </button>
+
+
+            </form>
 
             <form>
                 <div className="mb-4">
