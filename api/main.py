@@ -7,8 +7,8 @@ import pytz
 from dotenv import load_dotenv
 import os
 import openai
-from pydantic import BaseModel
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Optional
 from starlette.responses import FileResponse
 
 ## Load environment variables
@@ -29,6 +29,26 @@ class UserInput(BaseModel):
     radius: int
     date: int
     dietary_preferences: List[str]
+
+
+class Message(BaseModel):
+    role: str
+    content: Optional[str] = None
+    function_call: Optional[dict] = None
+
+    def to_dict(self):
+        if self.role == "user":
+            return self.dict(exclude={"function_call"})
+        return self.dict()
+
+
+class Messages(BaseModel):
+    messages: list[Message]
+
+
+class AIInput(BaseModel):
+    input: UserInput
+    messages: Optional[List[dict]] = None
 
 
 ## Define apps
@@ -98,58 +118,257 @@ async def get_business(id: str):
 
 
 ## OPENAI API
-@api_app.get("/ai_prompts")
-async def get_ai_prompts():
-    user_prompt = "Your goal is to narrow down the list of restaurants by generating a few questions for the user to answer to decide the most suitable restaurant. The questions should not include budget, distance to travel, time for the meal and dietary preferences. List of restaurants: Tartine Bakery, Zuni Café, State Bird Provisions, Nopa, Gary Danko, Swan Oyster Depot, Tadich Grill, Benu, Liholiho Yacht Club, House of Prime Rib, The Slanted Door, La Taqueria, El Farolito, Flour + Water, Burma Superstar, Foreign Cinema, Saison, Angler, Atelier Crenn"
-    messages = [
-        {"role": "user", "content": user_prompt},
-    ]
+@api_app.post("/get_question")
+async def get_question(messages: Messages):
+    print(messages)
     functions = [
         {
-            "name": "get_ai_prompts",
-            "description": "Get AI prompts given a list of restaurants",
+            "name": "get_question",
+            "description": "Get question to narrow down list of restaurants",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "prompts": {
-                        "type": "array",
-                        "description": "The list of prompts used to narrow down the list of restaurants",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "question": {
+                    "question": {
+                        "type": "object",
+                        "description": "The question to ask the user together with the choices for answers if have_result = false",
+                        "properties": {
+                            "question": {
+                                "type": "string",
+                                "description": "The question to ask the user",
+                            },
+                            "choices": {
+                                "type": "array",
+                                "description": "The choices for answers to the corresponding question",
+                                "items": {
                                     "type": "string",
-                                    "description": "The question to ask the user",
+                                    "properties": {
+                                        "choice": {
+                                            "type": "string",
+                                        }
+                                    },
                                 },
-                                "choices": {
-                                    "type": "array",
-                                    "description": "The choices for answers to the corresponding question",
-                                    "items": {
-                                        "type": "string",
-                                        "properties": {
-                                            "choice": {
-                                                "type": "string",
-                                            }
-                                        },
+                            },
+                        },
+                        "required": ["question", "choices"],
+                    },
+                },
+                "required": ["question"],
+            },
+        }
+    ]
+    messages_formatted = [message.to_dict() for message in messages.messages]
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=messages_formatted,
+        functions=functions,
+        function_call={"name": "get_question"},
+    )
+    response_message = response["choices"][0]["message"]
+    print(response)
+    print(response_message)
+    messages_formatted.append(response_message)
+
+    return {
+        "latest_response": response_message,
+        "messages": messages_formatted,
+    }
+
+
+@api_app.post("/get_result")
+async def get_result(ai_input: AIInput):
+    radius = ai_input.input.radius
+    latitude = ai_input.input.latitude
+    longitude = ai_input.input.longitude
+
+    yelp_response = await get_businesses(ai_input.input)
+    list_of_restaurants = [business["name"] for business in yelp_response["businesses"]]
+    mapped_response = [
+        {
+            "id": business["id"],
+            "name": business["name"],
+            "review_count": business["review_count"],
+            "categories": business["categories"],
+            "rating": business["rating"],
+            "is_closed": business["is_closed"],
+            "distance": business["distance"],
+        }
+        for business in yelp_response["businesses"]
+    ]
+    user_prompt = f"Your goal is to narrow down the list of restaurants to a specific restaurant by asking the user questions using the information in JSON provided, 1 question at a time with choices. The user wants to dine within {radius}m of coordinates ({latitude}, {longitude}) on Monday, 2pm. List of restaurants: {list_of_restaurants}. Information about each restaurant: {mapped_response}"
+    messages = (
+        ai_input.messages
+        if ai_input.messages
+        else [
+            {"role": "user", "content": user_prompt},
+        ]
+    )
+    functions = [
+        {
+            "name": "get_result",
+            "description": "Get id and name of restaurant decided from user preferences",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "have_result": {
+                        "type": "boolean",
+                        "description": "Whether the model has a final result from the list of restaurants",
+                    },
+                    "result": {
+                        "type": "object",
+                        "description": "The final result from the list of restaurants",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "description": "The id of the restaurant",
+                            },
+                            "name": {
+                                "type": "string",
+                                "description": "The name of the restaurant",
+                            },
+                        },
+                    },
+                },
+                "required": ["have_result"],
+            },
+        }
+    ]
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=messages,
+        functions=functions,
+        function_call={"name": "get_result"},
+    )
+    response_message = response["choices"][0]["message"]
+    print(response)
+    print(response_message)
+    messages.append(response_message)
+    return {
+        "latest_response": response_message,
+        "messages": messages,
+        "yelp_response_mapped": mapped_response,
+    }
+
+
+@api_app.post("/ai_prompts")
+async def get_ai_prompts(ai_input: AIInput):
+    radius = ai_input.input.radius
+    latitude = ai_input.input.latitude
+    longitude = ai_input.input.longitude
+
+    yelp_response = await get_businesses(ai_input.input)
+    list_of_restaurants = [business["name"] for business in yelp_response["businesses"]]
+    mapped_response = [
+        {
+            "id": business["id"],
+            "name": business["name"],
+            "review_count": business["review_count"],
+            "categories": business["categories"],
+            "rating": business["rating"],
+            "is_closed": business["is_closed"],
+            "distance": business["distance"],
+        }
+        for business in yelp_response["businesses"]
+    ]
+    user_prompt = f"Your goal is to narrow down the list of restaurants to a specific restaurant by asking the user questions using the information in JSON provided, 1 question at a time with choices. The user wants to dine within {radius}m of coordinates ({latitude}, {longitude}) on Monday, 2pm. List of restaurants: {list_of_restaurants}. Information about each restaurant: {mapped_response}"
+    messages = (
+        ai_input.messages
+        if ai_input.messages
+        else [
+            {"role": "user", "content": user_prompt},
+        ]
+    )
+    functions = [
+        {
+            "name": "get_question",
+            "description": "Get question to narrow down list of restaurants",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "have_result": {
+                        "type": "boolean",
+                        "description": "Whether the model has a final result from the list of restaurants",
+                    },
+                    "result": {
+                        "type": "string",
+                        "description": "The final result from the list of restaurants",
+                    },
+                    "question": {
+                        "type": "object",
+                        "description": "The question to ask the user together with the choices for answers if have_result = false",
+                        "properties": {
+                            "question": {
+                                "type": "string",
+                                "description": "The question to ask the user",
+                            },
+                            "choices": {
+                                "type": "array",
+                                "description": "The choices for answers to the corresponding question",
+                                "items": {
+                                    "type": "string",
+                                    "properties": {
+                                        "choice": {
+                                            "type": "string",
+                                        }
                                     },
                                 },
                             },
                         },
                     },
                 },
+                "required": ["have_result"],
             },
         }
     ]
+
+    # messages.append(
+    #     {
+    #         "role": "assistant",
+    #         "content": None,
+    #         "function_call": {
+    #             "name": "get_question",
+    #             "arguments": '{\n  "have_result": false,\n  "question": {\n    "question": "What type of cuisine are you in the mood for?",\n    "choices": ["Mexican", "American", "Thai", "Italian", "French"]\n  }\n}',
+    #         },
+    #     }
+    # )
+    # messages.append({"role": "user", "content": "American"})
+    # messages.append(
+    #     {
+    #         "role": "assistant",
+    #         "content": None,
+    #         "function_call": {
+    #             "name": "get_question",
+    #             "arguments": '{\n  "have_result": false,\n  "question": {\n    "question": "Would you prefer a burger joint or a more upscale dining experience?",\n    "choices": ["Burger joint", "Upscale dining"]\n  }\n}',
+    #         },
+    #     }
+    # )
+    # messages.append({"role": "user", "content": "Upscale dining"})
+    # messages.append(
+    #     {
+    #         "role": "assistant",
+    #         "content": None,
+    #         "function_call": {
+    #             "name": "get_question",
+    #             "arguments": '{\n  "have_result": false,\n  "question": {\n    "question": "Do you prefer a place that also serves alcohol?",\n    "choices": ["Yes", "No"]\n  }\n}',
+    #         },
+    #     }
+    # )
+    # messages.append({"role": "user", "content": "Yes"})
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=messages,
         functions=functions,
-        function_call={"name": "get_ai_prompts"},
+        function_call={"name": "get_question"},
     )
     response_message = response["choices"][0]["message"]
     print(response)
     print(response_message)
-    return {"message": "Get AI prompts"}
+    messages.append(response_message)
+    return {
+        "latest_response": response_message,
+        "messages": messages,
+        "yelp_response_mapped": mapped_response,
+    }
 
 
 ## HELPERS
