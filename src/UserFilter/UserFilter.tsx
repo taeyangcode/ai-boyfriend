@@ -16,14 +16,14 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
 
     const [latitude, setLatitude] = useState<string>('')
     const [longitude, setLongitude] = useState<string>('')
-    const [budget, setBudget] = useState<string>('')
-    const [distance, setDistance] = useState<string>('')
-    const [time, setTime] = useState<string>('')
+    const [budget, setBudget] = useState<string>('40')
+    const [distance, setDistance] = useState<string>('1234')
+    const [time, setTime] = useState<string>('1698639245')
     const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
 
-    const [address, setAddress] = useState<string>('')
-    const [city, setCity] = useState<string>('')
-    const [state, setState] = useState<string>('')
+    const [address, setAddress] = useState<string>('426 27th ave')
+    const [city, setCity] = useState<string>('sf')
+    const [state, setState] = useState<string>('ca')
 
     const handleDietaryPreferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = event.target
@@ -148,15 +148,36 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
             </form>
 
             <form>
-                <div className="mb-4">
-                    <label className="mb-2 block">How much are you willing to spend on the meal? </label>
-                    <input
-                        type="text"
-                        value={budget}
-                        onChange={(e) => setBudget(e.target.value)}
-                        className="w-full rounded border border-gray-300 px-2 py-1"
-                    />
+                <div className="mb-4 mt-20">
+                    <label className="mb-2 block">How much are you willing to spend on the meal (per person)? </label>
+                    <div className="flex">
+                        <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="5"
+                            value={budget}
+                            onChange={(e) => {
+                                const budgetValue = parseFloat(e.target.value)
+                                let price
+                                if (budgetValue <= 10) {
+                                    price = '1'
+                                } else if (budgetValue > 10 && budgetValue <= 30) {
+                                    price = '2'
+                                } else if (budgetValue > 30 && budgetValue <= 60) {
+                                    price = '3'
+                                } else {
+                                    price = '4'
+                                }
+
+                                setBudget(price)
+                            }}
+                            className="w-1/3 rounded border border-gray-300 px-2 py-1 "
+                        />
+                        <div className="ml-14">${budget}</div>
+                    </div>
                 </div>
+
                 <div className="mb-4">
                     <label className="mb-2 block">How far are you willing to travel? </label>
                     <input
