@@ -114,165 +114,169 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
     }
 
     return (
-        <div className="rounded-lg bg-gray-100 p-8 shadow-md">
-            <h2 className="mb-4 text-2xl font-semibold">Restaurant Preferences</h2>
+        <div className="rounded-lg bg-gray-100 shadow-md">
+            <h2 className="mb-8 flex justify-around py-20 text-6xl font-semibold">Tell me everything baby</h2>
+            <div className="flex justify-around">
+                {/* left container */}
+                <div className="pl-8">
+                    <div className="mb-4">
+                        <div>Longitude: {longitude} </div>
+                        <div>Latitude: {latitude}</div>
+                    </div>
 
-            <div className="mb-4">
-                <div>Longitude: {longitude} </div>
-                <div>Latitude: {latitude}</div>
+                    <form>
+                        <div className="mb-4">
+                            <label className="mb-4 mb-4 mt-8 block text-2xl">Address Line </label>
+                            <input
+                                type="text"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                className="h-12 w-full rounded border border-gray-300 px-2 py-1"
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="mb-4 mt-8 block text-2xl">City </label>
+                            <input
+                                type="text"
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
+                                className="h-12 w-full rounded border border-gray-300 px-2 py-1"
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="mb-4 mt-8 block text-2xl">State </label>
+                            <input
+                                type="text"
+                                value={state}
+                                onChange={(e) => setState(e.target.value)}
+                                className="h-12 w-full rounded border border-gray-300 px-2 py-1"
+                            />
+                        </div>
+
+                        <button type="submit" className="mt-4 rounded bg-blue-500 px-4 py-2 text-white" onClick={submitAddress}>
+                            Get Geographic Information
+                        </button>
+                    </form>
+                </div>
+
+                {/* right container */}
+                <div className="pb-32 pl-4 pr-8">
+                    <form>
+                        <div>
+                            <div className="mb-4 flex">
+                                <label className="text-2xl">How much are you willing to spend on the meal (per person)? </label>
+                                <div className="ml-16 text-2xl font-bold text-red-600">${budget}</div>
+                            </div>
+                            <div className="flex">
+                                <span>$5</span>
+                                <input
+                                    type="range"
+                                    min="5"
+                                    max="70"
+                                    step="5"
+                                    value={budget}
+                                    onChange={(e) => {
+                                        const budgetValue = parseFloat(e.target.value)
+                                        let price
+                                        if (budgetValue <= 10) {
+                                            price = '1'
+                                        } else if (budgetValue > 10 && budgetValue <= 30) {
+                                            price = '2'
+                                        } else if (budgetValue > 30 && budgetValue <= 60) {
+                                            price = '3'
+                                        } else {
+                                            price = '4'
+                                        }
+                                        setBudget(budgetValue)
+                                        setPrice(price)
+                                    }}
+                                    className="mx-5 w-1/2 rounded border border-gray-300 py-1"
+                                />
+                                <span>$70</span>
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="mb-4 mt-8 block text-2xl">How far are you willing to travel? </label>
+                            <input
+                                type="text"
+                                value={distance}
+                                onChange={(e) => setDistance(e.target.value)}
+                                className="h-12 w-full rounded border border-gray-300 px-4 py-2"
+                            />
+                        </div>
+                        {/* Bottom right container */}
+                        <div className="flex">
+                            <div className="mb-4">
+                                <label className="mb-4 mt-8 block pr-4 text-2xl">What time do you want to visit the restaurant? </label>
+                                <DatePicker
+                                    selected={date}
+                                    dateFormat="MMMM d, yyyy h:mm aa"
+                                    onChange={(date) => setDate(date ?? new Date())}
+                                    minDate={new Date()}
+                                    maxDate={addDays(new Date(), 365)}
+                                    placeholderText="Click to select a date and time"
+                                    showTimeSelect
+                                    showIcon
+                                    fixedHeight
+                                    inline
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="mb-4 mt-8 block text-2xl">Do you have any dietary preferences?</label>
+                                <div className="text-l space-y-2">
+                                    <label className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            value="Vegetarian"
+                                            checked={dietaryPreferences.includes('Vegetarian')}
+                                            onChange={handleDietaryPreferenceChange}
+                                            className="mr-2"
+                                        />
+                                        Vegetarian
+                                    </label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            value="Vegan"
+                                            checked={dietaryPreferences.includes('Vegan')}
+                                            onChange={handleDietaryPreferenceChange}
+                                            className="mr-2"
+                                        />
+                                        Vegan
+                                    </label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            value="Seafood"
+                                            checked={dietaryPreferences.includes('Seafood')}
+                                            onChange={handleDietaryPreferenceChange}
+                                            className="mr-2"
+                                        />
+                                        Seafood
+                                    </label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            value="Gluten-free"
+                                            checked={dietaryPreferences.includes('Gluten-free')}
+                                            onChange={handleDietaryPreferenceChange}
+                                            className="mr-2"
+                                        />
+                                        Gluten-free
+                                    </label>
+                                </div>
+                                <button type="submit" className="mt-8 rounded bg-blue-500 px-4 py-2 text-white" onClick={submitForm}>
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <form>
-                <div className="mb-4">
-                    <label className="mb-4 mb-4 mt-8 block text-3xl">Address Line </label>
-                    <input
-                        type="text"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        className="w-full rounded border border-gray-300 px-2 py-1"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label className="mb-4 mt-8 block text-3xl">City </label>
-                    <input
-                        type="text"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        className="w-full rounded border border-gray-300 px-2 py-1"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label className="mb-4 mt-8 block text-3xl">State </label>
-                    <input
-                        type="text"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                        className="w-full rounded border border-gray-300 px-2 py-1"
-                    />
-                </div>
-
-                <button type="submit" className="rounded bg-blue-500 px-4 py-2 text-white" onClick={submitAddress}>
-                    Get Geographic Information
-                </button>
-            </form>
-
-            <form>
-                <div className="mt-20">
-                    <div className="mb-4 flex">
-                        <label className="text-3xl">How much are you willing to spend on the meal (per person)? </label>
-                        <div className="ml-16 text-3xl font-bold text-red-600">${budget}</div>
-                    </div>
-                    <div className="flex">
-                        <span>$5</span>
-                        <input
-                            type="range"
-                            min="5"
-                            max="70"
-                            step="5"
-                            value={budget}
-                            onChange={(e) => {
-                                const budgetValue = parseFloat(e.target.value)
-                                let price
-                                if (budgetValue <= 10) {
-                                    price = '1'
-                                } else if (budgetValue > 10 && budgetValue <= 30) {
-                                    price = '2'
-                                } else if (budgetValue > 30 && budgetValue <= 60) {
-                                    price = '3'
-                                } else {
-                                    price = '4'
-                                }
-                                setBudget(budgetValue)
-                                setPrice(price)
-                            }}
-                            className="mx-5 w-1/2 rounded border border-gray-300 py-1"
-                        />
-                        <span>$70</span>
-                    </div>
-                </div>
-
-                <div className="mb-4">
-                    <label className="mb-4 mt-8 block text-3xl">How far are you willing to travel? </label>
-                    <input
-                        type="text"
-                        value={distance}
-                        onChange={(e) => setDistance(e.target.value)}
-                        className="w-full rounded border border-gray-300 px-2 py-1"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="mb-4 mt-8 block text-3xl">What time do you want to visit the restaurant? </label>
-                    <DatePicker
-                        selected={date}
-                        dateFormat="MMMM d, yyyy h:mm aa"
-                        onChange={(date) => setDate(date ?? new Date())}
-                        minDate={new Date()}
-                        maxDate={addDays(new Date(), 365)}
-                        placeholderText="Click to select a date and time"
-                        showTimeSelect
-                        showIcon
-                        fixedHeight
-                        inline
-                    />
-                    {/* <label className="mb-4 block">What time do you want to visit the restaurant? </label>
-                    <input
-                        type="text"
-                        value={time}
-                        onChange={(e) => setTime(e.target.value)}
-                        className="w-full rounded border border-gray-300 px-2 py-1"
-                    /> */}
-                </div>
-                <div className="mb-4">
-                    <label className="mb-4 mt-8 block text-3xl">Do you have any dietary preferences?</label>
-                    <div className="space-y-2">
-                        <label className="flex items-center">
-                            <input
-                                type="checkbox"
-                                value="Vegetarian"
-                                checked={dietaryPreferences.includes('Vegetarian')}
-                                onChange={handleDietaryPreferenceChange}
-                                className="mr-2"
-                            />
-                            Vegetarian
-                        </label>
-                        <label className="flex items-center">
-                            <input
-                                type="checkbox"
-                                value="Vegan"
-                                checked={dietaryPreferences.includes('Vegan')}
-                                onChange={handleDietaryPreferenceChange}
-                                className="mr-2"
-                            />
-                            Vegan
-                        </label>
-                        <label className="flex items-center">
-                            <input
-                                type="checkbox"
-                                value="Seafood"
-                                checked={dietaryPreferences.includes('Seafood')}
-                                onChange={handleDietaryPreferenceChange}
-                                className="mr-2"
-                            />
-                            Seafood
-                        </label>
-                        <label className="flex items-center">
-                            <input
-                                type="checkbox"
-                                value="Gluten-free"
-                                checked={dietaryPreferences.includes('Gluten-free')}
-                                onChange={handleDietaryPreferenceChange}
-                                className="mr-2"
-                            />
-                            Gluten-free
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" className="rounded bg-blue-500 px-4 py-2 text-white" onClick={submitForm}>
-                    Submit
-                </button>
-            </form>
         </div>
     )
 }
