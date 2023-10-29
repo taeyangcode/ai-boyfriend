@@ -11,6 +11,8 @@ function Result({ locationIds }: Props) {
 
     useEffect(() => {
         async function getLocationData(): Promise<Array<YelpBusiness>> {
+            const locationIds = ['mcdonalds-san-francisco']
+
             const responses: Array<Response> = await Promise.all(
                 locationIds.map((locationId) => fetch(`http://127.0.0.1:8000/api/businesses/${locationId}`, { method: 'POST' }))
             )
@@ -22,10 +24,16 @@ function Result({ locationIds }: Props) {
     }, [])
 
     return (
-        <div className="flex flex-row justify-evenly rounded-lg bg-gray-100 p-8 shadow-md">
-            {locationData.map((data) => (
-                <LocationCard businessData={data} />
-            ))}
+        <div className="flex w-full content-center justify-center">
+            {locationData.length === 0 ? (
+                <></>
+            ) : (
+                <div className="flex w-fit flex-row justify-evenly rounded-lg bg-gray-100 p-8 shadow-md">
+                    {locationData.map((data) => (
+                        <LocationCard businessData={data} />
+                    ))}
+                </div>
+            )}
         </div>
     )
 }
