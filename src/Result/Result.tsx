@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './../index.css'
+import LocationCard from '../LocationCard/LocationCard'
 
 interface Props {
     locationIds: Array<string>
@@ -21,12 +22,9 @@ function Result({ locationIds }: Props) {
     }, [])
 
     return (
-        <div className="rounded-lg bg-gray-100 p-8 shadow-md">
+        <div className="flex flex-row justify-evenly rounded-lg bg-gray-100 p-8 shadow-md">
             {locationData.map((data) => (
-                <>
-                    <h2 className="mb-4 text-2xl font-semibold">{data.name}</h2>
-                    <p>{data.image_url}</p>
-                </>
+                <LocationCard businessData={data} />
             ))}
         </div>
     )
