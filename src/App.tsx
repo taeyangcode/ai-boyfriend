@@ -8,7 +8,7 @@ function App() {
     const [notifications, setNotifications] = useState<Array<NotificationType>>(
         []
     )
-    const [selectedPage, setSelectedPage] = useState<Page>('preference')
+    const [selectedPage, setSelectedPage] = useState<Page>('result')
 
     // Questions and choices for questionnaire page
     const [question, setQuestion] = useState<string>('Sample Question')
