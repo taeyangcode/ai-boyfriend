@@ -82,8 +82,8 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
         console.log(typeof initialResponseJson['messages'])
 
         // Show results page if result is found; Go through questionnaire if not;
-        if (checkResult(json)) {
-            showResult(json, setRestaurantId, changePage)
+        if (checkResult(initialResponseJson)) {
+            showResult(initialResponseJson, setRestaurantId, changePage)
         } else {
             // Get questions and choices from get_question endpoint
             const response = await fetch('http://127.0.0.1:8000/api/get_question', {
