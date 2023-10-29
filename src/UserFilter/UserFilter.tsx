@@ -1,5 +1,8 @@
 import { useEffect, useState, MouseEvent } from 'react'
 import './../index.css'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { addDays } from 'date-fns'
 
 interface Props {
     notifications: Array<NotificationType>
@@ -10,49 +13,33 @@ interface Props {
     setRestaurantId: (value: Array<string>) => void
 }
 
-function UserFilter({
-    notifications,
-    setNotifications,
-    changePage,
-    setQuestion,
-    setChoices,
-    setRestaurantId,
-}: Props) {
-    const [currentPosition, setCurrentPosition] =
-        useState<GeolocationPosition>()
+function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
+    const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
 
     const [latitude, setLatitude] = useState<string>('')
     const [longitude, setLongitude] = useState<string>('')
     const [budget, setBudget] = useState<string>('')
     const [distance, setDistance] = useState<string>('')
-    const [time, setTime] = useState<string>('')
+    const [date, setDate] = useState<Date>(new Date())
     const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
 
     const [address, setAddress] = useState<string>('')
     const [city, setCity] = useState<string>('')
     const [state, setState] = useState<string>('')
 
-    const handleDietaryPreferenceChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleDietaryPreferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = event.target
         if (checked) {
             setDietaryPreferences([...dietaryPreferences, value])
         } else {
-            setDietaryPreferences(
-                dietaryPreferences.filter((pref) => pref !== value)
-            )
+            setDietaryPreferences(dietaryPreferences.filter((pref) => pref !== value))
         }
     }
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (position) => setCurrentPosition(position),
-            (error) =>
-                setNotifications([
-                    ...notifications,
-                    { code: error.code, message: error.message },
-                ]),
+            (error) => setNotifications([...notifications, { code: error.code, message: error.message }]),
             { timeout: 30000 }
         )
     }, [])
@@ -66,23 +53,20 @@ function UserFilter({
                 latitude: Number(currentPosition?.coords.latitude),
                 price: Number(budget),
                 radius: Number(distance),
-                date: Number(time),
+                date: Number(date),
                 dietary_preferences: dietaryPreferences,
             },
         }
 
         // First response to check if there is already a result
         // If have_result is false, we continue to get more questions to ask the user to narrow down the list of restaurants
-        const initialResponse = await fetch(
-            'http://127.0.0.1:8000/api/get_result',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(input),
-            }
-        )
+        const initialResponse = await fetch('http://127.0.0.1:8000/api/get_result', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(input),
+        })
         const initialResponseJson = await initialResponse.json()
         console.log(initialResponseJson)
         console.log('separator')
@@ -90,41 +74,29 @@ function UserFilter({
         console.log(typeof initialResponseJson['messages'])
 
         // Show results page if result is found; Go through questionnaire if not;
-        const haveResult =
-            initialResponseJson['latest_response']['function_call'][
-                'arguments'
-            ]['have_result']
+        const haveResult = initialResponseJson['latest_response']['function_call']['arguments']['have_result']
 
         if (haveResult) {
             // Send restaurant id to result page
-            const restaurantId = [
-                initialResponseJson['latest_response']['function_call'][
-                    'arguments'
-                ]['result'],
-            ]
+            const restaurantId = [initialResponseJson['latest_response']['function_call']['arguments']['result']]
             setRestaurantId(restaurantId)
             changePage('result')
         } else {
             // Get questions and choices from get_question endpoint
-            const response = await fetch(
-                'http://127.0.0.1:8000/api/get_question',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        messages: initialResponseJson['messages'],
-                    }),
-                }
-            )
+            const response = await fetch('http://127.0.0.1:8000/api/get_question', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    messages: initialResponseJson['messages'],
+                }),
+            })
             const responseJson = await response.json()
             console.log(responseJson)
 
             // Store response of question and choice
-            const questionAndChoices = JSON.parse(
-                responseJson['latest_response']['function_call']['arguments']
-            )
+            const questionAndChoices = JSON.parse(responseJson['latest_response']['function_call']['arguments'])
             setQuestion(questionAndChoices['question'])
             setChoices(questionAndChoices['choices'])
 
@@ -149,16 +121,13 @@ function UserFilter({
             state: state,
         }
         try {
-            const response = await fetch(
-                'http://127.0.0.1:8000/api/geolocation',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(geographicInfo),
-                }
-            )
+            const response = await fetch('http://127.0.0.1:8000/api/geolocation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(geographicInfo),
+            })
 
             if (response.ok) {
                 const latlong_response = await response.json()
@@ -175,9 +144,7 @@ function UserFilter({
 
     return (
         <div className="rounded-lg bg-gray-100 p-8 shadow-md">
-            <h2 className="mb-4 text-2xl font-semibold">
-                Restaurant Preferences
-            </h2>
+            <h2 className="mb-4 text-2xl font-semibold">Restaurant Preferences</h2>
 
             <div className="mb-4">
                 <div>Longitude: {longitude} </div>
@@ -215,20 +182,14 @@ function UserFilter({
                     />
                 </div>
 
-                <button
-                    type="submit"
-                    className="rounded bg-blue-500 px-4 py-2 text-white"
-                    onClick={submitAddress}
-                >
+                <button type="submit" className="rounded bg-blue-500 px-4 py-2 text-white" onClick={submitAddress}>
                     Get Geographic Information
                 </button>
             </form>
 
             <form>
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        How much are you willing to spend on the meal?{' '}
-                    </label>
+                    <label className="mb-2 block">How much are you willing to spend on the meal? </label>
                     <input
                         type="text"
                         value={budget}
@@ -237,9 +198,7 @@ function UserFilter({
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        How far are you willing to travel?{' '}
-                    </label>
+                    <label className="mb-2 block">How far are you willing to travel? </label>
                     <input
                         type="text"
                         value={distance}
@@ -248,28 +207,35 @@ function UserFilter({
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        What time do you want to visit the restaurant?{' '}
-                    </label>
+                    <label className="mb-2 block">What time do you want to visit the restaurant? </label>
+                    <DatePicker
+                        selected={date}
+                        dateFormat="MMMM d, yyyy h:mm aa"
+                        onChange={(date) => setDate(date ?? new Date())}
+                        minDate={new Date()}
+                        maxDate={addDays(new Date(), 365)}
+                        placeholderText="Click to select a date and time"
+                        showTimeSelect
+                        showIcon
+                        fixedHeight
+                        inline
+                    />
+                    {/* <label className="mb-2 block">What time do you want to visit the restaurant? </label>
                     <input
                         type="text"
                         value={time}
                         onChange={(e) => setTime(e.target.value)}
                         className="w-full rounded border border-gray-300 px-2 py-1"
-                    />
+                    /> */}
                 </div>
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        Do you have any dietary preferences?
-                    </label>
+                    <label className="mb-2 block">Do you have any dietary preferences?</label>
                     <div className="space-y-2">
                         <label className="flex items-center">
                             <input
                                 type="checkbox"
                                 value="Vegetarian"
-                                checked={dietaryPreferences.includes(
-                                    'Vegetarian'
-                                )}
+                                checked={dietaryPreferences.includes('Vegetarian')}
                                 onChange={handleDietaryPreferenceChange}
                                 className="mr-2"
                             />
@@ -299,9 +265,7 @@ function UserFilter({
                             <input
                                 type="checkbox"
                                 value="Gluten-free"
-                                checked={dietaryPreferences.includes(
-                                    'Gluten-free'
-                                )}
+                                checked={dietaryPreferences.includes('Gluten-free')}
                                 onChange={handleDietaryPreferenceChange}
                                 className="mr-2"
                             />
@@ -309,11 +273,7 @@ function UserFilter({
                         </label>
                     </div>
                 </div>
-                <button
-                    type="submit"
-                    className="rounded bg-blue-500 px-4 py-2 text-white"
-                    onClick={submitForm}
-                >
+                <button type="submit" className="rounded bg-blue-500 px-4 py-2 text-white" onClick={submitForm}>
                     Submit
                 </button>
             </form>

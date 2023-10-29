@@ -101,42 +101,14 @@ async def get_businesses(input: UserInput):
         "radius": input.radius,
         "open_at": input.date,
     }
-    response = requests.get(search_url, headers=headers, params=payload)
-    if response.ok:
-        return response.json()
-    else:
-        print(response.text)
-        return {"error": response.status_code}
-
-
-## GOOGLE GEOLOCATION API
-@api_app.post("/geolocation")
-async def get_coordinates_forAddress(input: GeoInput):
-    api_url = "https://maps.googleapis.com/maps/api/geocode/json"
-
-    params = {
-        "address": input.address + ", " + input.city + ", " + input.state,
-        "key": googleGeoLoc_api_key,
-    }
-
     try:
-        response = requests.get(api_url, params=params)
-        data = response.json()
-
-        print("DEBUG")
-        print(data)
-        print("DEBUG")
-        if data.get("status") == "OK":
-            result = data["results"][0]
-            location = result["geometry"]["location"]
-            lat = location["lat"]
-            lng = location["lng"]
-            return {"lat": lat, "lng": lng}
+        response = requests.get(search_url, headers=headers, params=payload)
+        if response.ok:
+            return response.json()
         else:
-            return None
-
+            return {"error": response.status_code}
     except Exception as e:
-        print("Error fetching coordinates:", str(e))
+        print("Error fetching businesses: ", str(e))
         return None
 
 
@@ -148,11 +120,15 @@ async def get_business(id: str):
         "Authorization": f"Bearer {yelp_api_key}",
     }
     payload = {"business_id_or_alias": "id"}
-    response = requests.get(search_url, headers=headers, params=payload)
-    if response.ok:
-        return response.json()
-    else:
-        return {"error": response.status_code}
+    try:
+        response = requests.get(search_url, headers=headers, params=payload)
+        if response.ok:
+            return response.json()
+        else:
+            return {"error": response.status_code}
+    except Exception as e:
+        print("Error fetching business: ", str(e))
+        return None
 
 
 ## GOOGLE GEOLOCATION API
@@ -169,10 +145,7 @@ async def get_coordinates_forAddress(input: GeoInput):
         response = requests.get(api_url, params=params)
         data = response.json()
 
-        print("DEBUG")
-        print(data)
-        print("DEBUG")
-        if data.get("status") == "OK":
+        if response.ok:
             result = data["results"][0]
             location = result["geometry"]["location"]
             lat = location["lat"]
@@ -182,14 +155,13 @@ async def get_coordinates_forAddress(input: GeoInput):
             return None
 
     except Exception as e:
-        print("Error fetching coordinates:", str(e))
+        print("Error fetching coordinates: ", str(e))
         return None
 
 
 ## OPENAI API
 @api_app.post("/get_question")
 async def get_question(messages: Messages):
-    print(messages)
     functions = [
         {
             "name": "get_question",
@@ -218,97 +190,110 @@ async def get_question(messages: Messages):
             },
         },
     ]
-    messages_formatted = [message.to_dict() for message in messages.messages]
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=messages_formatted,
-        functions=functions,
-        function_call={"name": "get_question"},
-    )
-    response_message = response["choices"][0]["message"]
-    print(response)
-    print(response_message)
-    messages_formatted.append(response_message)
 
-    return {
-        "latest_response": response_message,
-        "messages": messages_formatted,
-    }
+    ## Format messages to dict from Messages object
+    messages_formatted = [message.to_dict() for message in messages.messages]
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=messages_formatted,
+            functions=functions,
+            function_call={"name": "get_question"},
+        )
+        response_message = response["choices"][0]["message"]
+        messages_formatted.append(response_message)
+
+        return {
+            "latest_response": response_message,
+            "messages": messages_formatted,
+        }
+    except Exception as e:
+        print("Error fetching question: ", str(e))
+        return None
 
 
 @api_app.post("/get_result")
 async def get_result(ai_input: AIInput):
-    print(ai_input)
     radius = ai_input.input.radius
     latitude = ai_input.input.latitude
     longitude = ai_input.input.longitude
 
-    yelp_response = await get_businesses(ai_input.input)
-    print(yelp_response)
-    list_of_restaurants = [business["name"] for business in yelp_response["businesses"]]
-    mapped_response = [
-        {
-            "id": business["id"],
-            "name": business["name"],
-            "review_count": business["review_count"],
-            "categories": business["categories"],
-            "rating": business["rating"],
-            "is_closed": business["is_closed"],
-            "distance": business["distance"],
-        }
-        for business in yelp_response["businesses"]
-    ]
-    user_prompt = f"Your goal is to narrow down the list of restaurants to a specific restaurant by asking the user questions using the information in JSON provided, 1 question at a time with choices. The user wants to dine within {radius}m of coordinates ({latitude}, {longitude}) on Monday, 2pm. List of restaurants: {list_of_restaurants}. Information about each restaurant: {mapped_response}"
-    messages = [
-        {"role": "user", "content": user_prompt},
-    ]
+    try:
+        ## Get list of restaurants
+        yelp_response = await get_businesses(ai_input.input)
+        list_of_restaurants = [
+            business["name"] for business in yelp_response["businesses"]
+        ]
+        mapped_response = [
+            {
+                "id": business["id"],
+                "name": business["name"],
+                "review_count": business["review_count"],
+                "categories": business["categories"],
+                "rating": business["rating"],
+                "is_closed": business["is_closed"],
+                "distance": business["distance"],
+            }
+            for business in yelp_response["businesses"]
+        ]
+        user_prompt = f"Your goal is to narrow down the list of restaurants to a specific restaurant by asking the user questions using the information in JSON provided, 1 question at a time with at most 5 choices. The user wants to dine within {radius}m of coordinates ({latitude}, {longitude}) on Monday, 2pm. List of restaurants: {list_of_restaurants}. Information about each restaurant: {mapped_response}"
 
-    functions = [
-        {
-            "name": "get_result",
-            "description": "Get id and name of restaurant decided from user preferences",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "have_result": {
-                        "type": "boolean",
-                        "description": "Whether the model has a final result from the list of restaurants",
-                    },
-                    "result": {
-                        "type": "object",
-                        "description": "The final result from the list of restaurants",
-                        "properties": {
-                            "id": {
-                                "type": "string",
-                                "description": "The id of the restaurant",
-                            },
-                            "name": {
-                                "type": "string",
-                                "description": "The name of the restaurant",
+        ## Handle the case of final result after a conversation.
+        ## Need to take in the conversation and give the final result.
+        messages = (
+            ai_input.messages
+            if ai_input.messages
+            else [
+                {"role": "user", "content": user_prompt},
+            ]
+        )
+
+        functions = [
+            {
+                "name": "get_result",
+                "description": "Get id and name of restaurant decided from user preferences",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "have_result": {
+                            "type": "boolean",
+                            "description": "Whether the model has a final result from the list of restaurants",
+                        },
+                        "result": {
+                            "type": "object",
+                            "description": "The final result from the list of restaurants",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "description": "The id of the restaurant",
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "description": "The name of the restaurant",
+                                },
                             },
                         },
                     },
+                    "required": ["have_result"],
                 },
-                "required": ["have_result"],
-            },
-        }
-    ]
+            }
+        ]
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=messages,
-        functions=functions,
-        function_call={"name": "get_result"},
-    )
-    response_message = response["choices"][0]["message"]
-    print(response)
-    print(response_message)
-    messages.append(response_message)
-    return {
-        "latest_response": response_message,
-        "messages": messages,
-        "yelp_response_mapped": mapped_response,
-    }
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=messages,
+            functions=functions,
+            function_call={"name": "get_result"},
+        )
+        response_message = response["choices"][0]["message"]
+        messages.append(response_message)
+        return {
+            "latest_response": response_message,
+            "messages": messages,
+        }
+    except Exception as e:
+        print("Error fetching result: ", str(e))
+        return None
 
 
 ## HELPERS
