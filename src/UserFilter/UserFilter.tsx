@@ -10,10 +10,17 @@ interface Props {
 function UserFilter({ notifications, setNotifications }: Props) {
     const [currentPosition, setCurrentPosition] =
         useState<GeolocationPosition>()
+
+    const [latitude, setLatitude] = useState<string>('')
+    const [longitude, setLongitude] = useState<string>('')
     const [budget, setBudget] = useState<string>('')
     const [distance, setDistance] = useState<string>('')
     const [time, setTime] = useState<string>('')
     const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
+
+    const [address, setAddress] = useState<string>('')
+    const [city, setCity] = useState<string>('')
+    const [state, setState] = useState<string>('')
 
     const handleDietaryPreferenceChange = (
         event: React.ChangeEvent<HTMLInputElement>
@@ -60,6 +67,41 @@ function UserFilter({ notifications, setNotifications }: Props) {
         console.log(response)
     }
 
+    async function submitAddress() {
+        event?.preventDefault()
+        if (!address || !city || !state) {
+            alert("Invalid address, city, or state")    
+            return 
+        }
+        
+        const geographicInfo: GeoInput = {
+            address: (address),
+            city: (city),
+            state: (state)
+        }
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/geolocation', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(geographicInfo),
+            });
+
+          
+            if (response.ok) {
+              const latlong_response = await response.json();
+              setLatitude(latlong_response.lat);
+              setLongitude(latlong_response.lng);
+            } else {
+              // Handle errors here, e.g., response.status and response.statusText
+              console.error('Error:', response.status, response.statusText);
+            }
+          } catch (error) {
+            console.error('Error fetching coordinates:', error);
+          }
+    }
+
     return (
         <div className="rounded-lg bg-gray-100 p-8 shadow-md">
             <h2 className="mb-4 text-2xl font-semibold">
@@ -67,9 +109,57 @@ function UserFilter({ notifications, setNotifications }: Props) {
             </h2>
 
             <div className="mb-4">
-                <div>Longitude: {currentPosition?.coords.longitude}</div>
-                <div>Latitude: {currentPosition?.coords.latitude}</div>
+                <div>Longitude: {longitude} </div>
+                <div>Latitude: {latitude}</div>
             </div>
+
+            <form>
+                <div className="mb-4">
+                    <label className="mb-2 block">
+                        Address Line {' '}
+                    </label>
+                    <input
+                        type="text"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="w-full rounded border border-gray-300 px-2 py-1"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label className="mb-2 block">
+                        City{' '}
+                    </label>
+                    <input
+                        type="text"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className="w-full rounded border border-gray-300 px-2 py-1"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label className="mb-2 block">
+                        State{' '}
+                    </label>
+                    <input
+                        type="text"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                        className="w-full rounded border border-gray-300 px-2 py-1"
+                    />
+                </div>
+
+                <button
+                    type="submit"
+                    className="rounded bg-blue-500 px-4 py-2 text-white"
+                    onClick={submitAddress}
+                >
+                    Get Geographic Information
+                </button>
+
+
+            </form>
 
             <form>
                 <div className="mb-4">

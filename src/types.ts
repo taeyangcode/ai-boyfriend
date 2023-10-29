@@ -18,6 +18,13 @@ type UserInput = {
     date: number; // Unix timestamp
     dietary_preferences: string[];
 };
+
+type GeoInput = {
+    address: string;
+    city: string;
+    state: string;
+};
+
 type NotificationType = ErrorDetails;
 
 interface ErrorDetails {
