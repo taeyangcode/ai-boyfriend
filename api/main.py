@@ -94,7 +94,7 @@ async def get_businesses(input: UserInput):
     }
     payload = {
         "term": "food",
-        "limit": 2,  # max of 50 results
+        "limit": 20,  # max of 50 results
         "longitude": input.longitude,
         "latitude": input.latitude,
         "price": enumerate_to(input.price),
@@ -288,7 +288,7 @@ async def get_initial_result(input: UserInput):
             }
             for business in yelp_response["businesses"]
         ]
-        user_prompt = f"Your goal is to narrow down the list of restaurants to a specific restaurant by asking the user questions using the information in JSON provided, 1 question at a time with at most 5 choices. The user wants to dine within {radius}m of coordinates ({latitude}, {longitude}) on {date}. List of restaurants: {list_of_restaurants}. Information about each restaurant: {mapped_response}"
+        user_prompt = f"Your goal is to narrow down the list of restaurants to 1 specific restaurant by asking the user 1 question at a time with at most 5 choices using the information in JSON provided. You should only ask at most 5 questions. Your questions should not contain the name of the restaurant and should be open-ended questions. Do not ask questions regarding location, date, time and price. Do not repeat your questions. List of restaurants: {list_of_restaurants}. Information about each restaurant: {mapped_response}"
 
         ## Handle the case of final result after a conversation.
         ## Need to take in the conversation and give the final result.
