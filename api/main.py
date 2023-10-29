@@ -198,32 +198,25 @@ async def get_question(messages: Messages):
                 "type": "object",
                 "properties": {
                     "question": {
-                        "type": "object",
-                        "description": "The question to ask the user together with the choices for answers if have_result = false",
-                        "properties": {
-                            "question": {
-                                "type": "string",
-                                "description": "The question to ask the user",
-                            },
-                            "choices": {
-                                "type": "array",
-                                "description": "The choices for answers to the corresponding question",
-                                "items": {
+                        "type": "string",
+                        "description": "The question to ask the user",
+                    },
+                    "choices": {
+                        "type": "array",
+                        "description": "The choices for answers to the corresponding question",
+                        "items": {
+                            "type": "string",
+                            "properties": {
+                                "choice": {
                                     "type": "string",
-                                    "properties": {
-                                        "choice": {
-                                            "type": "string",
-                                        }
-                                    },
-                                },
+                                }
                             },
                         },
-                        "required": ["question", "choices"],
                     },
                 },
-                "required": ["question"],
+                "required": ["question", "choices"],
             },
-        }
+        },
     ]
     messages_formatted = [message.to_dict() for message in messages.messages]
     response = openai.ChatCompletion.create(
@@ -245,11 +238,12 @@ async def get_question(messages: Messages):
 
 @api_app.post("/get_result")
 async def get_result(ai_input: AIInput):
-    radius = ai_input.radius
-    latitude = ai_input.latitude
-    longitude = ai_input.longitude
+    print(ai_input)
+    radius = ai_input.input.radius
+    latitude = ai_input.input.latitude
+    longitude = ai_input.input.longitude
 
-    yelp_response = await get_businesses(ai_input)
+    yelp_response = await get_businesses(ai_input.input)
     print(yelp_response)
     list_of_restaurants = [business["name"] for business in yelp_response["businesses"]]
     mapped_response = [
