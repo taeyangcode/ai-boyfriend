@@ -31,14 +31,14 @@ function QuestionScreen({
     const [selectedChoices, setSelectedChoices] = useState<Array<string>>([])
 
     return (
-        <div className="rounded-lg bg-gray-100 p-8 shadow-md">
-            <h2 className="mb-4 text-2xl font-semibold">Babe, let me help you to decide 😉</h2>
+        <div>
+            <h2 className="mb-4 flex justify-around pt-10 text-7xl font-bold italic text-white"> Come babe, let me help you decide</h2>
 
-            <div className="mt-20 flex">
+            <div className="mt-20 flex justify-center">
                 <div>
                     <Question question={question} />
                 </div>
-                <div className="w-1/2 p-4">
+                <div className="p-4">
                     <ul>
                         {choices.map((choice) => (
                             <Choice

@@ -115,19 +115,14 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
     }
 
     return (
-        <div className="rounded-lg bg-gray-100 shadow-md">
-            <h2 className="mb-8 flex justify-around py-20 text-6xl font-semibold">Tell me everything baby</h2>
-            <div className="flex justify-around">
+        <div>
+            <h2 className="mb-4 flex justify-around pt-10 text-7xl font-bold italic text-white">Tell me everything baby</h2>
+            <div className="flex justify-center pt-10">
                 {/* left container */}
-                <div className="pl-8">
-                    <div className="mb-4">
-                        <div>Longitude: {longitude} </div>
-                        <div>Latitude: {latitude}</div>
-                    </div>
-
+                <div className="rounded-3xl bg-white p-10">
                     <form>
                         <div className="mb-4">
-                            <label className="mb-4 mb-4 mt-8 block text-2xl">Address Line </label>
+                            <label className="mb-4 block text-xl font-semibold">Address Line </label>
                             <input
                                 type="text"
                                 value={address}
@@ -137,7 +132,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                         </div>
 
                         <div className="mb-4">
-                            <label className="mb-4 mt-8 block text-2xl">City </label>
+                            <label className="mb-4 mt-8 block text-xl font-semibold">City </label>
                             <input
                                 type="text"
                                 value={city}
@@ -147,7 +142,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                         </div>
 
                         <div className="mb-4">
-                            <label className="mb-4 mt-8 block text-2xl">State </label>
+                            <label className="mb-4 mt-8 block text-xl font-semibold">State </label>
                             <input
                                 type="text"
                                 value={state}
@@ -156,62 +151,77 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                             />
                         </div>
 
-                        <button type="submit" className="mt-4 rounded bg-blue-500 px-4 py-2 text-white" onClick={submitAddress}>
+                        <button
+                            type="submit"
+                            className="mt-4 rounded bg-gradient-to-r from-blue-300 to-blue-500 px-4 py-2 text-white transition duration-700 ease-in-out hover:from-orange-500 hover:to-orange-300"
+                            onClick={submitAddress}
+                        >
                             Get Geographic Information
                         </button>
                     </form>
+
+                    <div className="mt-8">
+                        <div className="text-lg font-semibold">Longitude: {longitude} </div>
+                        <div className="text-lg font-semibold">Latitude: {latitude}</div>
+                    </div>
                 </div>
 
                 {/* right container */}
-                <div className="pb-32 pl-4 pr-8">
+                <div className="pl-8 pr-8">
                     <form>
-                        <div>
-                            <div className="mb-4 flex">
-                                <label className="text-2xl">How much are you willing to spend on the meal (per person)? </label>
-                                <div className="ml-16 text-2xl font-bold text-red-600">${budget}</div>
+                        <div className="mb-4 rounded-3xl bg-white p-10">
+                            <div>
+                                <div className="mb-4 flex">
+                                    <label className="text-xl font-semibold">
+                                        How much are you willing to spend on the meal (per person)?{' '}
+                                    </label>
+                                    <div className="ml-16 text-xl font-bold text-blue-600">${budget}</div>
+                                </div>
+                                <div className="flex">
+                                    <span>$5</span>
+                                    <input
+                                        type="range"
+                                        min="5"
+                                        max="70"
+                                        step="5"
+                                        value={budget}
+                                        onChange={(e) => {
+                                            const budgetValue = parseFloat(e.target.value)
+                                            let price
+                                            if (budgetValue <= 10) {
+                                                price = '1'
+                                            } else if (budgetValue > 10 && budgetValue <= 30) {
+                                                price = '2'
+                                            } else if (budgetValue > 30 && budgetValue <= 60) {
+                                                price = '3'
+                                            } else {
+                                                price = '4'
+                                            }
+                                            setBudget(budgetValue)
+                                            setPrice(price)
+                                        }}
+                                        className="mx-5 w-1/2 rounded bg-gradient-to-r from-blue-300 to-orange-500 py-1"
+                                    />
+                                    <span>$70</span>
+                                </div>
                             </div>
-                            <div className="flex">
-                                <span>$5</span>
-                                <input
-                                    type="range"
-                                    min="5"
-                                    max="70"
-                                    step="5"
-                                    value={budget}
-                                    onChange={(e) => {
-                                        const budgetValue = parseFloat(e.target.value)
-                                        let price
-                                        if (budgetValue <= 10) {
-                                            price = '1'
-                                        } else if (budgetValue > 10 && budgetValue <= 30) {
-                                            price = '2'
-                                        } else if (budgetValue > 30 && budgetValue <= 60) {
-                                            price = '3'
-                                        } else {
-                                            price = '4'
-                                        }
-                                        setBudget(budgetValue)
-                                        setPrice(price)
-                                    }}
-                                    className="mx-5 w-1/2 rounded border border-gray-300 py-1"
-                                />
-                                <span>$70</span>
-                            </div>
-                        </div>
 
-                        <div className="mb-4">
-                            <label className="mb-4 mt-8 block text-2xl">How far are you willing to travel? </label>
-                            <input
-                                type="text"
-                                value={distance}
-                                onChange={(e) => setDistance(e.target.value)}
-                                className="h-12 w-full rounded border border-gray-300 px-4 py-2"
-                            />
+                            <div className="mb-4">
+                                <label className="mb-4 mt-8 block text-xl font-semibold">How far are you willing to travel? </label>
+                                <input
+                                    type="text"
+                                    value={distance}
+                                    onChange={(e) => setDistance(e.target.value)}
+                                    className="h-12 w-full rounded border border-gray-300 px-4 py-2"
+                                />
+                            </div>
                         </div>
                         {/* Bottom right container */}
-                        <div className="flex">
+                        <div className="flex rounded-3xl bg-white p-10">
                             <div className="mb-4">
-                                <label className="mb-4 mt-8 block pr-4 text-2xl">What time do you want to visit the restaurant? </label>
+                                <label className="mb-4 block pr-4 text-xl font-semibold">
+                                    What time do you want to visit the restaurant?{' '}
+                                </label>
                                 <DatePicker
                                     selected={date}
                                     dateFormat="MMMM d, yyyy h:mm aa"
@@ -226,8 +236,8 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                                 />
                             </div>
 
-                            <div className="mb-4">
-                                <label className="mb-4 mt-8 block text-2xl">Do you have any dietary preferences?</label>
+                            <div className="ml-4">
+                                <label className="mb-4 block text-xl font-semibold">Do you have any dietary preferences?</label>
                                 <div className="text-l space-y-2">
                                     <label className="flex items-center">
                                         <input
@@ -270,7 +280,11 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                                         Gluten-free
                                     </label>
                                 </div>
-                                <button type="submit" className="mt-8 rounded bg-blue-500 px-4 py-2 text-white" onClick={submitForm}>
+                                <button
+                                    type="submit"
+                                    className="hover:delay-3000 mt-4 rounded bg-gradient-to-r from-blue-300 to-blue-500 px-4 py-2 text-white hover:from-orange-500 hover:to-orange-300"
+                                    onClick={submitForm}
+                                >
                                     Submit
                                 </button>
                             </div>
