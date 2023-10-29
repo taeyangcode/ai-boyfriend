@@ -10,7 +10,7 @@ export function showResult(json: ResponseChain, setRestaurantId: SetStateType<Ar
     changePage('result')
 }
 
-export async function getNextQuestion(initialResponseJson: ResponseChain, questionAndChoices: QuestionAndChoices) {
+export async function getNextQuestion(responseChain: ResponseChain, questionAndChoices: QuestionAndChoices) {
     // Get questions and choices from get_question endpoint
     const response = await fetch('http://127.0.0.1:8000/api/get_question', {
         method: 'POST',
@@ -18,7 +18,7 @@ export async function getNextQuestion(initialResponseJson: ResponseChain, questi
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            messages: initialResponseJson['messages'],
+            messages: responseChain['messages'],
         }),
     })
     const responseJson = await response.json()
@@ -40,6 +40,9 @@ export function appendResponse(json: ResponseChain, choices: Array<string>) {
     }
     console.info('user response', userResponse)
     console.info('json', json)
+    console.info('json messages', json['messages'])
+    console.info('json messages push', json['messages'].push(userResponse))
+    console.info('json messages after', json['messages'])
     json['messages'].push(userResponse)
 }
 

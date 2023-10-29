@@ -6,7 +6,7 @@ import './../index.css'
 import Choice from './Choice'
 
 interface Props {
-    changePage: (newPage: Page) => void
+    changePage: (newPage: Page, responseChain?: ResponseChain) => void
     question: string
     setQuestion: (value: string) => void
     choices: Array<string>
@@ -14,7 +14,8 @@ interface Props {
     responseChain?: ResponseChain
 }
 
-function QuestionScreen({ question, choices, setChoices, changePage, responseChain }: Props) {
+function QuestionScreen({ question, choices, setChoices, setQuestion, changePage, responseChain }: Props) {
+    console.info('response chain QUESTION: ', responseChain)
     // function to make API post requests with obtained results
     const [selectedChoices, setSelectedChoices] = useState<Array<string>>([])
 
@@ -35,6 +36,8 @@ function QuestionScreen({ question, choices, setChoices, changePage, responseCha
                                 selectedChoices={selectedChoices}
                                 setSelectedChoices={setSelectedChoices}
                                 changePage={changePage}
+                                setQuestion={setQuestion}
+                                setChoices={setChoices}
                             />
                         ))}
                     </ul>
@@ -62,6 +65,7 @@ function Questionnaire({ changePage, question, setQuestion, choices, setChoices,
                     setQuestion={setQuestion}
                     choices={choices}
                     setChoices={setChoices}
+                    responseChain={responseChain}
                 />
             ) : (
                 <>

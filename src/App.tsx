@@ -8,6 +8,7 @@ function App() {
     const [notifications, setNotifications] = useState<Array<NotificationType>>([])
     const [selectedPage, setSelectedPage] = useState<Page>('preference')
     const [responseChain, setResponseChain] = useState<ResponseChain>()
+    console.log('responseChain: ', responseChain)
 
     // Questions and choices for questionnaire page
     const [question, setQuestion] = useState<string>('Sample Question')
@@ -22,6 +23,10 @@ function App() {
         setSelectedPage(newPage)
         setResponseChain(newResponseChain)
         console.info('response chain app', responseChain)
+        console.log('RENDERING NEW PAGE')
+        console.log('new page: ', selectedPage)
+        console.log('new response chain: ', responseChain)
+        renderPage(selectedPage, responseChain)
     }
 
     const renderPage = (newPage: Page, messageChain?: ResponseChain) => {
@@ -38,6 +43,7 @@ function App() {
                     />
                 )
             case 'questionnaire':
+                console.log('IM IN QUESTIONNAIRE PAGE')
                 return (
                     <Questionnaire
                         changePage={changePage}
@@ -45,6 +51,7 @@ function App() {
                         setQuestion={setQuestion}
                         choices={choices}
                         setChoices={setChoices}
+                        responseChain={responseChain}
                     />
                 )
             case 'result':
