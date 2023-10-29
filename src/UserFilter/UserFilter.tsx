@@ -7,6 +7,7 @@ interface Props {
     changePage: (newPage: Page) => void
     setQuestion: (value: string) => void
     setChoices: (value: Array<string>) => void
+    setRestaurantId: (value: Array<string>) => void
 }
 
 function UserFilter({
@@ -15,6 +16,7 @@ function UserFilter({
     changePage,
     setQuestion,
     setChoices,
+    setRestaurantId,
 }: Props) {
     const [currentPosition, setCurrentPosition] =
         useState<GeolocationPosition>()
@@ -74,14 +76,52 @@ function UserFilter({
         })
         const json = await response.json()
         console.log(json)
+        console.log('separator')
+        console.log(json['messages'])
+        console.log(typeof json['messages'])
 
-        // Store response of question and choice
-        // const questionAndChoices = json['function_call']['question']
-        // setQuestion(questionAndChoices['question'])
-        // setChoices(questionAndChoices['choices'])
+        // Show results page if result is found; Go through questionnaire if not;
+        const haveResult =
+            json['latest_response']['function_call']['arguments']['have_result']
 
-        // Change page
-        changePage('questionnaire')
+        if (haveResult) {
+            // send restaurant id to get_result endpoint
+            const restaurantId = [
+                json['latest_response']['function_call']['arguments']['result'],
+            ]
+            setRestaurantId(restaurantId)
+            changePage('result')
+        } else {
+            // Get questions and choices from diff endpoint
+            const response2 = await fetch(
+                'http://127.0.0.1:8000/api/get_question',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        messages: json['messages'],
+                    }),
+                }
+            )
+            const json2 = await response2.json()
+            console.log(json2)
+
+            // Store response of question and choice
+            const json3 = JSON.parse(
+                json2['latest_response']['function_call']['arguments']
+            )
+            const questionAndChoices = json3['question']
+            setQuestion(questionAndChoices['question'])
+            setChoices(questionAndChoices['choices'])
+
+            console.log('question: ', questionAndChoices['question'])
+            console.log('choices: ', questionAndChoices['choices'])
+
+            // Change page
+            changePage('questionnaire')
+        }
     }
 
     async function submitAddress() {

@@ -3,9 +3,10 @@ import './../index.css'
 
 interface Props {
     locationIds: Array<string>
+    restaurantId: Array<string>
 }
 
-function Result({ locationIds }: Props) {
+function Result({ locationIds, restaurantId }: Props) {
     const [locationData, setLocationData] = useState<Array<YelpBusiness>>([])
 
     useEffect(() => {
@@ -30,7 +31,10 @@ function Result({ locationIds }: Props) {
     return (
         <div className="rounded-lg bg-gray-100 p-8 shadow-md">
             {locationData.map((data) => (
-                <h2 className="mb-4 text-2xl font-semibold">{data.name}</h2>
+                <>
+                    <h2 className="mb-4 text-2xl font-semibold">{data.name}</h2>
+                    <p>{restaurantId}</p>
+                </>
             ))}
         </div>
     )

@@ -32,6 +32,7 @@ function App() {
                         changePage={changePage}
                         setQuestion={setQuestion}
                         setChoices={setChoices}
+                        setRestaurantId={setRestaurantId}
                     />
                 )
             case 'questionnaire':
@@ -51,6 +52,7 @@ function App() {
                             'chick-fil-a-daly-city-2',
                             'mcdonalds-san-francisco',
                         ]}
+                        restaurantId={restaurantId}
                     />
                 )
             default:
