@@ -18,8 +18,9 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
     const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
     const [latitude, setLatitude] = useState<string>('')
     const [longitude, setLongitude] = useState<string>('')
-    const [budget, setBudget] = useState<string>('')
-    const [distance, setDistance] = useState<string>('')
+    const [price, setPrice] = useState<string>('40')
+    const [budget, setBudget] = useState<number>(40)
+    const [distance, setDistance] = useState<string>('1234')
     const [date, setDate] = useState<Date>(new Date())
     const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
 
@@ -51,7 +52,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
             input: {
                 longitude: Number(longitude),
                 latitude: Number(latitude),
-                price: Number(budget),
+                price: Number(price),
                 radius: Number(distance),
                 date: parseInt((date.getTime() / 1000).toFixed(0)),
                 dietary_preferences: dietaryPreferences,
@@ -179,10 +180,10 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                                 } else {
                                     price = '4'
                                 }
-
-                                setBudget(price)
+                                setBudget(budgetValue)
+                                setPrice(price)
                             }}
-                            className="w-1/3 rounded border border-gray-300 px-2 py-1 "
+                            className="w-1/3 rounded border border-gray-300 py-1"
                         />
                         <div className="ml-14">${budget}</div>
                     </div>
