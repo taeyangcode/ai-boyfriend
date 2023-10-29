@@ -27,7 +27,14 @@ function App() {
             case 'questionnaire':
                 return <Questionnaire />
             case 'result':
-                return <Result locationIds={['chick-fil-a-daly-city-2']} />
+                return (
+                    <Result
+                        locationIds={[
+                            'chick-fil-a-daly-city-2',
+                            'mcdonalds-san-francisco',
+                        ]}
+                    />
+                )
             default:
                 return (
                     <>
