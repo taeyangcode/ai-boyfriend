@@ -1,5 +1,6 @@
 import { useEffect, useState, MouseEvent } from 'react'
 import './../index.css'
+import { showResult, checkResult, getNextQuestion, appendResponse, sendResponse } from '../Helper/Helper'
 
 interface Props {
     notifications: Array<NotificationType>
@@ -8,44 +9,6 @@ interface Props {
     setQuestion: (value: string) => void
     setChoices: (value: Array<string>) => void
     setRestaurantId: (value: Array<string>) => void
-}
-
-function checkResult(json: ResponseChain) {
-    const have_result = json['latest_response']['function_call']['arguments']['have_result']
-    return have_result
-}
-
-function showResult(json: ResponseChain, setRestaurantId: (value: Array<string>) => void, changePage: (newPage: Page) => void) {
-    const restaurantId = [json['latest_response']['function_call']['arguments']['result']]
-    setRestaurantId(restaurantId)
-    changePage('result')
-}
-
-async function getNextQuestion(
-    initialResponseJson: ResponseChain,
-    setQuestion: (value: string) => void,
-    setChoices: (value: Array<string>) => void
-) {
-    // Get questions and choices from get_question endpoint
-    const response = await fetch('http://127.0.0.1:8000/api/get_question', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            messages: initialResponseJson['messages'],
-        }),
-    })
-    const responseJson = await response.json()
-    console.log(responseJson)
-
-    // Store response of question and choice
-    const questionAndChoices = JSON.parse(responseJson['latest_response']['function_call']['arguments'])
-    setQuestion(questionAndChoices['question'])
-    setChoices(questionAndChoices['choices'])
-
-    console.log('question: ', questionAndChoices['question'])
-    console.log('choices: ', questionAndChoices['choices'])
 }
 
 function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
@@ -100,7 +63,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
         if (checkResult(initialResponseJson)) {
             showResult(initialResponseJson, setRestaurantId, changePage)
         } else {
-            getNextQuestion(initialResponseJson, setQuestion, setChoices)
+            getNextQuestion(initialResponseJson, { setQuestion, setChoices })
             changePage('questionnaire')
         }
     }

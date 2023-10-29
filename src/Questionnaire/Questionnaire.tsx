@@ -1,5 +1,6 @@
 import { MouseEvent } from 'react'
 import Question from './Question'
+import { checkResult, showResult, getNextQuestion, appendResponse, sendResponse } from '../Helper/Helper'
 
 import './../index.css'
 

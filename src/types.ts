@@ -64,10 +64,17 @@ interface AssistantResponse {
     }
 }
 
+type SetStateType<T> = (value: T) => void
+
 interface ResponseChain {
     latest_response: AssistantResponse
     messages: Array<UserResponse | AssistantResponse>
     yelp_response_mapped: Record<string, any>
+}
+
+interface QuestionAndChoices {
+    setQuestion: SetStateType<string>
+    setChoices: SetStateType<Array<string>>
 }
 
 interface YelpCategory {
