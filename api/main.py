@@ -105,39 +105,7 @@ async def get_businesses(input: UserInput):
     if response.ok:
         return response.json()
     else:
-        print(response.text)
         return {"error": response.status_code}
-
-
-## GOOGLE GEOLOCATION API
-@api_app.post("/geolocation")
-async def get_coordinates_forAddress(input: GeoInput):
-    api_url = "https://maps.googleapis.com/maps/api/geocode/json"
-
-    params = {
-        "address": input.address + ", " + input.city + ", " + input.state,
-        "key": googleGeoLoc_api_key,
-    }
-
-    try:
-        response = requests.get(api_url, params=params)
-        data = response.json()
-
-        print("DEBUG")
-        print(data)
-        print("DEBUG")
-        if data.get("status") == "OK":
-            result = data["results"][0]
-            location = result["geometry"]["location"]
-            lat = location["lat"]
-            lng = location["lng"]
-            return {"lat": lat, "lng": lng}
-        else:
-            return None
-
-    except Exception as e:
-        print("Error fetching coordinates:", str(e))
-        return None
 
 
 @api_app.post("/businesses/{id}")
@@ -169,10 +137,7 @@ async def get_coordinates_forAddress(input: GeoInput):
         response = requests.get(api_url, params=params)
         data = response.json()
 
-        print("DEBUG")
-        print(data)
-        print("DEBUG")
-        if data.get("status") == "OK":
+        if response.ok:
             result = data["results"][0]
             location = result["geometry"]["location"]
             lat = location["lat"]
@@ -238,13 +203,12 @@ async def get_question(messages: Messages):
 
 @api_app.post("/get_result")
 async def get_result(ai_input: AIInput):
-    print(ai_input)
     radius = ai_input.input.radius
     latitude = ai_input.input.latitude
     longitude = ai_input.input.longitude
 
+    ## Get list of restaurants
     yelp_response = await get_businesses(ai_input.input)
-    print(yelp_response)
     list_of_restaurants = [business["name"] for business in yelp_response["businesses"]]
     mapped_response = [
         {
@@ -313,7 +277,6 @@ async def get_result(ai_input: AIInput):
     return {
         "latest_response": response_message,
         "messages": messages,
-        "yelp_response_mapped": mapped_response,
     }
 
 
