@@ -88,19 +88,6 @@ async def get_businesses(input: UserInput):
         return {"error": response.status_code}
 
 
-@api_app.post("/businesses/{id}")
-async def get_business(id: str):
-    search_url = f"{yelp_base_url}businesses/{id}"
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {yelp_api_key}",
-    }
-    payload = {"business_id_or_alias": "id"}
-    response = requests.get(search_url, headers=headers, params=payload)
-    if response.ok:
-        return response.json()
-    else:
-        return {"error": response.status_code}
 ## GOOGLE GEOLOCATION API
 @api_app.post("/geolocation")
 
@@ -132,6 +119,21 @@ async def get_coordinates_forAddress(input: GeoInput):
     except Exception as e:
         print("Error fetching coordinates:", str(e))
         return None
+=======
+@api_app.post("/businesses/{id}")
+async def get_business(id: str):
+    search_url = f"{yelp_base_url}businesses/{id}"
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"Bearer {yelp_api_key}",
+    }
+    payload = {"business_id_or_alias": "id"}
+    response = requests.get(search_url, headers=headers, params=payload)
+    if response.ok:
+        return response.json()
+    else:
+        return {"error": response.status_code}
+>>>>>>> 75b0b45 (create endpoint for specific business)
 
 
 ## OPENAI API
