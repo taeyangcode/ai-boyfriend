@@ -10,7 +10,11 @@ export function showResult(json: ResponseChain, setRestaurantId: SetStateType<Ar
     changePage('result')
 }
 
-export async function getNextQuestion(responseChain: ResponseChain, questionAndChoices: QuestionAndChoices) {
+export async function getNextQuestion(
+    responseChain: ResponseChain,
+    questionAndChoices: QuestionAndChoices,
+    setResponseChain: SetStateType<ResponseChain>
+) {
     // Get questions and choices from get_question endpoint
     const response = await fetch('http://127.0.0.1:8000/api/get_question', {
         method: 'POST',
@@ -23,6 +27,8 @@ export async function getNextQuestion(responseChain: ResponseChain, questionAndC
     })
     const responseJson = await response.json()
     console.log('response json', responseJson)
+
+    setResponseChain(responseJson)
 
     // Store response of question and choice
     const questionResponse = JSON.parse(responseJson['latest_response']['function_call']['arguments'])
@@ -38,14 +44,5 @@ export function appendResponse(json: ResponseChain, choices: Array<string>) {
         role: 'user',
         content: choices.toString(),
     }
-    console.info('user response', userResponse)
-    console.info('json', json)
-    console.info('json messages', json['messages'])
-    console.info('json messages push', json['messages'].push(userResponse))
-    console.info('json messages after', json['messages'])
     json['messages'].push(userResponse)
-}
-
-export async function sendResponse(json: ResponseChain) {
-    await fetch('http://127.0.0.1:8000/api/get_question', { method: 'POST', body: JSON.stringify(json.messages) })
 }

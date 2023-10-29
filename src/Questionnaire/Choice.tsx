@@ -8,9 +8,19 @@ interface Props {
     responseChain?: ResponseChain
     setQuestion: (value: string) => void
     setChoices: (value: Array<string>) => void
+    setResponseChain?: (value: ResponseChain) => void
 }
 
-function Choice({ choiceText, selectedChoices, setSelectedChoices, changePage, responseChain, setChoices, setQuestion }: Props) {
+function Choice({
+    choiceText,
+    selectedChoices,
+    setSelectedChoices,
+    changePage,
+    responseChain,
+    setChoices,
+    setQuestion,
+    setResponseChain,
+}: Props) {
     return (
         <li key={choiceText} className="mb-2">
             <label className="inline-flex items-center">
@@ -18,9 +28,10 @@ function Choice({ choiceText, selectedChoices, setSelectedChoices, changePage, r
                     className="form-radio-custom"
                     name="question-options"
                     onClick={() => {
-                        setSelectedChoices([...selectedChoices, choiceText])
+                        setSelectedChoices([choiceText])
                         appendResponse(responseChain!, [...selectedChoices, choiceText])
-                        getNextQuestion(responseChain!, { setQuestion, setChoices })
+                        console.error(setResponseChain)
+                        getNextQuestion(responseChain!, { setQuestion, setChoices }, setResponseChain!)
                         changePage('questionnaire', responseChain!)
                     }}
                 />

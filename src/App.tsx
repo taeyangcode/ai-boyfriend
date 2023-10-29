@@ -26,10 +26,10 @@ function App() {
         console.log('RENDERING NEW PAGE')
         console.log('new page: ', selectedPage)
         console.log('new response chain: ', responseChain)
-        renderPage(selectedPage, responseChain)
+        renderPage()
     }
 
-    const renderPage = (newPage: Page, messageChain?: ResponseChain) => {
+    const renderPage = () => {
         switch (selectedPage) {
             case 'preference':
                 return (
@@ -40,6 +40,7 @@ function App() {
                         setQuestion={setQuestion}
                         setChoices={setChoices}
                         setRestaurantId={setRestaurantId}
+                        setResponseChain={setResponseChain}
                     />
                 )
             case 'questionnaire':
@@ -52,6 +53,7 @@ function App() {
                         choices={choices}
                         setChoices={setChoices}
                         responseChain={responseChain}
+                        setResponseChain={setResponseChain}
                     />
                 )
             case 'result':
@@ -68,7 +70,7 @@ function App() {
     return (
         <>
             <NotificationHandler notifications={notifications} />
-            {renderPage(selectedPage, responseChain)}
+            {renderPage()}
         </>
     )
 }

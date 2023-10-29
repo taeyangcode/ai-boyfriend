@@ -94,7 +94,7 @@ async def get_businesses(input: UserInput):
     }
     payload = {
         "term": "food",
-        "limit": 50,  # max of 50 results
+        "limit": 10,  # max of 50 results
         "longitude": input.longitude,
         "latitude": input.latitude,
         "price": enumerate_to(input.price),
@@ -169,6 +169,10 @@ async def get_question(messages: Messages):
             "parameters": {
                 "type": "object",
                 "properties": {
+                    "have_result": {
+                        "type": "boolean",
+                        "description": "Whether the model has a final result from the list of restaurants",
+                    },
                     "question": {
                         "type": "string",
                         "description": "The question to ask the user",
@@ -186,7 +190,7 @@ async def get_question(messages: Messages):
                         },
                     },
                 },
-                "required": ["question", "choices"],
+                "required": ["question", "choices", "have_result"],
             },
         },
     ]

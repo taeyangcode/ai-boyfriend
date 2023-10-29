@@ -12,9 +12,10 @@ interface Props {
     setQuestion: (value: string) => void
     setChoices: (value: Array<string>) => void
     setRestaurantId: (value: Array<string>) => void
+    setResponseChain?: (value: ResponseChain) => void
 }
 
-function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
+function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId, setResponseChain }: Props) {
     const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
     const [latitude, setLatitude] = useState<string>('')
     const [longitude, setLongitude] = useState<string>('')
@@ -75,7 +76,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
         if (checkResult(initialResponseJson)) {
             showResult(initialResponseJson, setRestaurantId, changePage)
         } else {
-            getNextQuestion(initialResponseJson, { setQuestion, setChoices })
+            getNextQuestion(initialResponseJson, { setQuestion, setChoices }, setResponseChain!)
             changePage('questionnaire', initialResponseJson)
         }
     }

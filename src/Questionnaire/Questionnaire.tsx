@@ -1,6 +1,6 @@
 import { MouseEvent, useState } from 'react'
 import Question from './Question'
-import { checkResult, showResult, getNextQuestion, appendResponse, sendResponse } from '../Helper/Helper'
+import { checkResult, showResult, getNextQuestion, appendResponse } from '../Helper/Helper'
 
 import './../index.css'
 import Choice from './Choice'
@@ -12,9 +12,10 @@ interface Props {
     choices: Array<string>
     setChoices: (value: Array<string>) => void
     responseChain?: ResponseChain
+    setResponseChain?: (value: ResponseChain) => void
 }
 
-function QuestionScreen({ question, choices, setChoices, setQuestion, changePage, responseChain }: Props) {
+function QuestionScreen({ question, choices, setChoices, setQuestion, changePage, responseChain, setResponseChain }: Props) {
     console.info('response chain QUESTION: ', responseChain)
     // function to make API post requests with obtained results
     const [selectedChoices, setSelectedChoices] = useState<Array<string>>([])
@@ -38,6 +39,7 @@ function QuestionScreen({ question, choices, setChoices, setQuestion, changePage
                                 changePage={changePage}
                                 setQuestion={setQuestion}
                                 setChoices={setChoices}
+                                setResponseChain={setResponseChain}
                             />
                         ))}
                     </ul>
@@ -47,7 +49,7 @@ function QuestionScreen({ question, choices, setChoices, setQuestion, changePage
     )
 }
 
-function Questionnaire({ changePage, question, setQuestion, choices, setChoices, responseChain }: Props) {
+function Questionnaire({ changePage, question, setQuestion, choices, setChoices, responseChain, setResponseChain }: Props) {
     console.info('response chain 1', responseChain)
 
     const haveResult = false
@@ -66,6 +68,7 @@ function Questionnaire({ changePage, question, setQuestion, choices, setChoices,
                     choices={choices}
                     setChoices={setChoices}
                     responseChain={responseChain}
+                    setResponseChain={setResponseChain}
                 />
             ) : (
                 <>
