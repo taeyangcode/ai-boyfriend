@@ -1,6 +1,6 @@
 import { useEffect, useState, MouseEvent } from 'react'
 import './../index.css'
-import { showResult, checkResult, getNextQuestion, appendResponse, sendResponse } from '../Helper/Helper'
+import { showResult, checkResult, getNextQuestion, appendResponse } from '../Helper/Helper'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { addDays } from 'date-fns'
@@ -50,20 +50,18 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
         event.preventDefault() // Prevent page from refreshing
 
         const input: UserInput = {
-            input: {
-                longitude: Number(longitude),
-                latitude: Number(latitude),
-                price: Number(price),
-                radius: Number(distance),
-                date: parseInt((date.getTime() / 1000).toFixed(0)),
-                dietary_preferences: dietaryPreferences,
-            },
+            longitude: Number(longitude),
+            latitude: Number(latitude),
+            price: Number(price),
+            radius: Number(distance),
+            date: parseInt((date.getTime() / 1000).toFixed(0)),
+            dietary_preferences: dietaryPreferences,
         }
 
         // First response to check if there is already a result
         // If have_result is false, we continue to get more questions to ask the user to narrow down the list of restaurants
         console.info(input)
-        const initialResponse = await fetch('http://127.0.0.1:8000/api/get_result', {
+        const initialResponse = await fetch('http://127.0.0.1:8000/api/get_initial_result', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +74,8 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
         if (checkResult(initialResponseJson)) {
             showResult(initialResponseJson, setRestaurantId, changePage)
         } else {
-            getNextQuestion(initialResponseJson, { setQuestion, setChoices }, setResponseChain!)
+            console.error(setResponseChain)
+            getNextQuestion(initialResponseJson, { setQuestion, setChoices }, setResponseChain!, setRestaurantId, changePage)
             changePage('questionnaire', initialResponseJson)
         }
     }

@@ -44,10 +44,10 @@ function App() {
                     />
                 )
             case 'questionnaire':
-                console.log('IM IN QUESTIONNAIRE PAGE')
                 return (
                     <Questionnaire
                         changePage={changePage}
+                        setRestaurantId={setRestaurantId}
                         question={question}
                         setQuestion={setQuestion}
                         choices={choices}
@@ -57,7 +57,7 @@ function App() {
                     />
                 )
             case 'result':
-                return <Result locationIds={['chick-fil-a-daly-city-2', 'mcdonalds-san-francisco']} restaurantId={restaurantId} />
+                return <Result locationIds={restaurantId} />
             default:
                 return (
                     <>

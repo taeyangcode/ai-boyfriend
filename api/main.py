@@ -94,7 +94,7 @@ async def get_businesses(input: UserInput):
     }
     payload = {
         "term": "food",
-        "limit": 10,  # max of 50 results
+        "limit": 2,  # max of 50 results
         "longitude": input.longitude,
         "latitude": input.latitude,
         "price": enumerate_to(input.price),
@@ -216,16 +216,63 @@ async def get_question(messages: Messages):
         return None
 
 
-@api_app.post("/get_result")
-async def get_result(ai_input: AIInput):
-    radius = ai_input.input.radius
-    latitude = ai_input.input.latitude
-    longitude = ai_input.input.longitude
-    date = unix_time_to_readable(ai_input.input.date)
+@api_app.post("/get_final_result")
+async def get_final_result(messages: Messages):
+    try:
+        functions = [
+            {
+                "name": "get_final_result",
+                "description": "Get id and name of restaurant decided from user preferences",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "result": {
+                            "type": "object",
+                            "description": "The final result from the list of restaurants",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "description": "The id of the restaurant",
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "description": "The name of the restaurant",
+                                },
+                            },
+                        },
+                    },
+                    "required": ["result"],
+                },
+            }
+        ]
+        messages_formatted = [message.to_dict() for message in messages.messages]
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=messages_formatted,
+            functions=functions,
+            function_call={"name": "get_final_result"},
+        )
+        response_message = response["choices"][0]["message"]
+        messages_formatted.append(response_message)
+        return {
+            "latest_response": response_message,
+            "messages": messages_formatted,
+        }
+    except Exception as e:
+        print("Error fetching result: ", str(e))
+        return None
+
+
+@api_app.post("/get_initial_result")
+async def get_initial_result(input: UserInput):
+    radius = input.radius
+    latitude = input.latitude
+    longitude = input.longitude
+    date = unix_time_to_readable(input.date)
 
     try:
         ## Get list of restaurants
-        yelp_response = await get_businesses(ai_input.input)
+        yelp_response = await get_businesses(input)
         list_of_restaurants = [
             business["name"] for business in yelp_response["businesses"]
         ]
@@ -245,17 +292,13 @@ async def get_result(ai_input: AIInput):
 
         ## Handle the case of final result after a conversation.
         ## Need to take in the conversation and give the final result.
-        messages = (
-            ai_input.messages
-            if ai_input.messages
-            else [
-                {"role": "user", "content": user_prompt},
-            ]
-        )
+        messages = [
+            {"role": "user", "content": user_prompt},
+        ]
 
         functions = [
             {
-                "name": "get_result",
+                "name": "get_initial_result",
                 "description": "Get id and name of restaurant decided from user preferences",
                 "parameters": {
                     "type": "object",
@@ -288,7 +331,7 @@ async def get_result(ai_input: AIInput):
             model="gpt-4",
             messages=messages,
             functions=functions,
-            function_call={"name": "get_result"},
+            function_call={"name": "get_initial_result"},
         )
         response_message = response["choices"][0]["message"]
         messages.append(response_message)

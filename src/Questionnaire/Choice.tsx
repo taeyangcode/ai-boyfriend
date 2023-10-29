@@ -9,6 +9,7 @@ interface Props {
     setQuestion: (value: string) => void
     setChoices: (value: Array<string>) => void
     setResponseChain?: (value: ResponseChain) => void
+    setRestaurantId: (value: Array<string>) => void
 }
 
 function Choice({
@@ -20,6 +21,7 @@ function Choice({
     setChoices,
     setQuestion,
     setResponseChain,
+    setRestaurantId,
 }: Props) {
     return (
         <li key={choiceText} className="mb-2">
@@ -31,7 +33,7 @@ function Choice({
                         setSelectedChoices([choiceText])
                         appendResponse(responseChain!, [...selectedChoices, choiceText])
                         console.error(setResponseChain)
-                        getNextQuestion(responseChain!, { setQuestion, setChoices }, setResponseChain!)
+                        getNextQuestion(responseChain!, { setQuestion, setChoices }, setResponseChain!, setRestaurantId, changePage)
                         changePage('questionnaire', responseChain!)
                     }}
                 />

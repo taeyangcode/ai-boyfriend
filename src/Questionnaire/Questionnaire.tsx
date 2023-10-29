@@ -13,9 +13,19 @@ interface Props {
     setChoices: (value: Array<string>) => void
     responseChain?: ResponseChain
     setResponseChain?: (value: ResponseChain) => void
+    setRestaurantId: (value: Array<string>) => void
 }
 
-function QuestionScreen({ question, choices, setChoices, setQuestion, changePage, responseChain, setResponseChain }: Props) {
+function QuestionScreen({
+    question,
+    choices,
+    setChoices,
+    setQuestion,
+    changePage,
+    responseChain,
+    setResponseChain,
+    setRestaurantId,
+}: Props) {
     console.info('response chain QUESTION: ', responseChain)
     // function to make API post requests with obtained results
     const [selectedChoices, setSelectedChoices] = useState<Array<string>>([])
@@ -37,6 +47,7 @@ function QuestionScreen({ question, choices, setChoices, setQuestion, changePage
                                 selectedChoices={selectedChoices}
                                 setSelectedChoices={setSelectedChoices}
                                 changePage={changePage}
+                                setRestaurantId={setRestaurantId}
                                 setQuestion={setQuestion}
                                 setChoices={setChoices}
                                 setResponseChain={setResponseChain}
@@ -49,35 +60,34 @@ function QuestionScreen({ question, choices, setChoices, setQuestion, changePage
     )
 }
 
-function Questionnaire({ changePage, question, setQuestion, choices, setChoices, responseChain, setResponseChain }: Props) {
+function Questionnaire({
+    changePage,
+    question,
+    setQuestion,
+    choices,
+    setChoices,
+    responseChain,
+    setResponseChain,
+    setRestaurantId,
+}: Props) {
     console.info('response chain 1', responseChain)
 
-    const haveResult = false
-
-    function submitChoice(event: MouseEvent<HTMLButtonElement>) {
-        event.preventDefault()
-    }
+    // function submitChoice(event: MouseEvent<HTMLButtonElement>) {
+    //     event.preventDefault()
+    // }
 
     return (
         <div>
-            {!haveResult ? (
-                <QuestionScreen
-                    changePage={changePage}
-                    question={question}
-                    setQuestion={setQuestion}
-                    choices={choices}
-                    setChoices={setChoices}
-                    responseChain={responseChain}
-                    setResponseChain={setResponseChain}
-                />
-            ) : (
-                <>
-                    <div>Alright I have something for you ❤️</div>
-                    <button type="submit" className="rounded bg-blue-500 px-4 py-2 text-white" onClick={submitChoice}>
-                        Show me
-                    </button>
-                </>
-            )}
+            <QuestionScreen
+                changePage={changePage}
+                question={question}
+                setQuestion={setQuestion}
+                choices={choices}
+                setChoices={setChoices}
+                responseChain={responseChain}
+                setResponseChain={setResponseChain}
+                setRestaurantId={setRestaurantId}
+            />
         </div>
     )
 }
