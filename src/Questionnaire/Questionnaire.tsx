@@ -1,4 +1,4 @@
-import { MouseEvent } from 'react'
+import { MouseEvent, useState } from 'react'
 import Question from './Question'
 import { checkResult, showResult, getNextQuestion, appendResponse, sendResponse } from '../Helper/Helper'
 
@@ -11,10 +11,12 @@ interface Props {
     setQuestion: (value: string) => void
     choices: Array<string>
     setChoices: (value: Array<string>) => void
+    responseChain?: ResponseChain
 }
 
-function QuestionScreen({ question, choices }: Props) {
+function QuestionScreen({ question, choices, setChoices, changePage, responseChain }: Props) {
     // function to make API post requests with obtained results
+    const [selectedChoices, setSelectedChoices] = useState<Array<string>>([])
 
     return (
         <div className="rounded-lg bg-gray-100 p-8 shadow-md">
@@ -27,7 +29,13 @@ function QuestionScreen({ question, choices }: Props) {
                 <div className="w-1/2 p-4">
                     <ul>
                         {choices.map((choice) => (
-                            <Choice choiceText={choice} />
+                            <Choice
+                                responseChain={responseChain}
+                                choiceText={choice}
+                                selectedChoices={selectedChoices}
+                                setSelectedChoices={setSelectedChoices}
+                                changePage={changePage}
+                            />
                         ))}
                     </ul>
                 </div>
@@ -36,12 +44,13 @@ function QuestionScreen({ question, choices }: Props) {
     )
 }
 
-function Questionnaire({ changePage, question, setQuestion, choices, setChoices }: Props) {
+function Questionnaire({ changePage, question, setQuestion, choices, setChoices, responseChain }: Props) {
+    console.info('response chain 1', responseChain)
+
     const haveResult = false
 
     function submitChoice(event: MouseEvent<HTMLButtonElement>) {
         event.preventDefault()
-        changePage('result')
     }
 
     return (

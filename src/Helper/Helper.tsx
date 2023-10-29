@@ -1,4 +1,5 @@
 export function checkResult(json: ResponseChain) {
+    console.info('json', json)
     const have_result = json['latest_response']['function_call']['arguments']['have_result']
     return have_result
 }
@@ -21,7 +22,7 @@ export async function getNextQuestion(initialResponseJson: ResponseChain, questi
         }),
     })
     const responseJson = await response.json()
-    console.log(responseJson)
+    console.log('response json', responseJson)
 
     // Store response of question and choice
     const questionResponse = JSON.parse(responseJson['latest_response']['function_call']['arguments'])
@@ -32,10 +33,16 @@ export async function getNextQuestion(initialResponseJson: ResponseChain, questi
     console.log('choices: ', questionResponse['choices'])
 }
 
-export function appendResponse() {
-    return 1
+export function appendResponse(json: ResponseChain, choices: Array<string>) {
+    const userResponse: UserResponse = {
+        role: 'user',
+        content: choices.toString(),
+    }
+    console.info('user response', userResponse)
+    console.info('json', json)
+    json['messages'].push(userResponse)
 }
 
-export function sendResponse() {
-    return 1
+export async function sendResponse(json: ResponseChain) {
+    await fetch('http://127.0.0.1:8000/api/get_question', { method: 'POST', body: JSON.stringify(json.messages) })
 }

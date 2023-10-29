@@ -8,7 +8,7 @@ import { addDays } from 'date-fns'
 interface Props {
     notifications: Array<NotificationType>
     setNotifications: (value: Array<NotificationType>) => void
-    changePage: (newPage: Page) => void
+    changePage: (newPage: Page, messageChain?: ResponseChain) => void
     setQuestion: (value: string) => void
     setChoices: (value: Array<string>) => void
     setRestaurantId: (value: Array<string>) => void
@@ -61,6 +61,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
 
         // First response to check if there is already a result
         // If have_result is false, we continue to get more questions to ask the user to narrow down the list of restaurants
+        console.info(input)
         const initialResponse = await fetch('http://127.0.0.1:8000/api/get_result', {
             method: 'POST',
             headers: {
@@ -75,7 +76,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
             showResult(initialResponseJson, setRestaurantId, changePage)
         } else {
             getNextQuestion(initialResponseJson, { setQuestion, setChoices })
-            changePage('questionnaire')
+            changePage('questionnaire', initialResponseJson)
         }
     }
 

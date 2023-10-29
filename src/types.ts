@@ -58,8 +58,10 @@ interface AssistantResponse {
     function_call: {
         name: string
         arguments: {
-            have_result: boolean,
-            result: string,
+            have_result: boolean
+            result: string
+            question: string
+            choices: Array<string>
         }
     }
 }
@@ -69,7 +71,6 @@ type SetStateType<T> = (value: T) => void
 interface ResponseChain {
     latest_response: AssistantResponse
     messages: Array<UserResponse | AssistantResponse>
-    yelp_response_mapped: Record<string, any>
 }
 
 interface QuestionAndChoices {
