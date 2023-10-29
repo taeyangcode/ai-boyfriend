@@ -76,9 +76,9 @@ function UserFilter({
         console.log(json)
 
         // Store response of question and choice
-        const questionAndChoices = json['function_call']['question']
-        setQuestion(questionAndChoices['question'])
-        setChoices(questionAndChoices['choices'])
+        // const questionAndChoices = json['function_call']['question']
+        // setQuestion(questionAndChoices['question'])
+        // setChoices(questionAndChoices['choices'])
 
         // Change page
         changePage('questionnaire')
