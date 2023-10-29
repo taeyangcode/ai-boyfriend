@@ -53,7 +53,7 @@ function UserFilter({
                 ]),
             { timeout: 30000 }
         )
-    })
+    }, [])
 
     async function submitForm(event: MouseEvent<HTMLButtonElement>) {
         const input: UserInput = {
