@@ -24,22 +24,22 @@ function Choice({
     setRestaurantId,
 }: Props) {
     return (
-        <li key={choiceText} className="mb-2">
-            <label className="inline-flex items-center">
-                <input
-                    className="form-radio-custom"
-                    name="question-options"
-                    onClick={() => {
-                        setSelectedChoices([choiceText])
-                        appendResponse(responseChain!, [...selectedChoices, choiceText])
-                        console.error(setResponseChain)
-                        getNextQuestion(responseChain!, { setQuestion, setChoices }, setResponseChain!, setRestaurantId, changePage)
-                        changePage('questionnaire', responseChain!)
-                    }}
-                />
-                <span className="ml-2">{choiceText}</span>
-            </label>
-        </li>
+        <div
+            className="rounded-3xl hover:bg-gray-100"
+            onClick={() => {
+                setSelectedChoices([choiceText])
+                appendResponse(responseChain!, [...selectedChoices, choiceText])
+                console.error(setResponseChain)
+                getNextQuestion(responseChain!, { setQuestion, setChoices }, setResponseChain!, setRestaurantId, changePage)
+                changePage('questionnaire', responseChain!)
+            }}
+        >
+            <li key={choiceText} className="mb-8 cursor-pointer p-2">
+                <label className="inline-flex items-center">
+                    <span className="ml-2 text-xl">{choiceText}</span>
+                </label>
+            </li>
+        </div>
     )
 }
 

@@ -32,28 +32,30 @@ function QuestionScreen({
 
     return (
         <div>
-            <h2 className="mb-4 flex justify-around pt-10 text-7xl font-bold italic text-white"> Come babe, let me help you decide</h2>
+            <div className="items-center justify-center">
+                <h2 className="mb-4 flex justify-center pt-10 text-7xl font-bold italic text-white"> Come babe, let me help you decide</h2>
 
-            <div className="mt-20 flex justify-center">
-                <div>
-                    <Question question={question} />
-                </div>
-                <div className="p-4">
-                    <ul>
-                        {choices.map((choice) => (
-                            <Choice
-                                responseChain={responseChain}
-                                choiceText={choice}
-                                selectedChoices={selectedChoices}
-                                setSelectedChoices={setSelectedChoices}
-                                changePage={changePage}
-                                setRestaurantId={setRestaurantId}
-                                setQuestion={setQuestion}
-                                setChoices={setChoices}
-                                setResponseChain={setResponseChain}
-                            />
-                        ))}
-                    </ul>
+                <div className="mt-20 justify-center rounded-3xl bg-white">
+                    <div className="p-10">
+                        <Question question={question} />
+                    </div>
+                    <div className="px-8 py-4">
+                        <ul>
+                            {choices.map((choice) => (
+                                <Choice
+                                    responseChain={responseChain}
+                                    choiceText={choice}
+                                    selectedChoices={selectedChoices}
+                                    setSelectedChoices={setSelectedChoices}
+                                    changePage={changePage}
+                                    setRestaurantId={setRestaurantId}
+                                    setQuestion={setQuestion}
+                                    setChoices={setChoices}
+                                    setResponseChain={setResponseChain}
+                                />
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@ interface Props {
 }
 
 function Question({ question }: Props) {
-    return <div className="w-1/2 text-3xl">{question}</div>
+    return <div className="text-3xl">{question}</div>
 }
 
 export default Question
