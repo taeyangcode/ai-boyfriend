@@ -1,6 +1,5 @@
-import { MouseEvent, useState } from 'react'
+import { useState } from 'react'
 import Question from './Question'
-import { checkResult, showResult, getNextQuestion, appendResponse } from '../Helper/Helper'
 
 import './../index.css'
 import Choice from './Choice'
@@ -73,10 +72,6 @@ function Questionnaire({
     setRestaurantId,
 }: Props) {
     console.info('response chain 1', responseChain)
-
-    // function submitChoice(event: MouseEvent<HTMLButtonElement>) {
-    //     event.preventDefault()
-    // }
 
     return (
         <div>
