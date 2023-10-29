@@ -53,7 +53,7 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                 latitude: Number(currentPosition?.coords.latitude),
                 price: Number(budget),
                 radius: Number(distance),
-                date: Number(date),
+                date: parseInt((date.getTime() / 1000).toFixed(0)),
                 dietary_preferences: dietaryPreferences,
             },
         }
