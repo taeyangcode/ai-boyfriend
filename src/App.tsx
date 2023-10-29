@@ -3,13 +3,14 @@ import UserFilter from './UserFilter/UserFilter'
 import Questionnaire from './Questionnaire/Questionnaire'
 import Result from './Result/Result'
 import NotificationHandler from './Notification/Notification'
+import '../src/index.css'
 
 function App() {
     const [notifications, setNotifications] = useState<Array<NotificationType>>([])
     const [selectedPage, setSelectedPage] = useState<Page>('preference')
 
     // Questions and choices for questionnaire page
-    const [question, setQuestion] = useState<string>('Sample Question')
+    const [question, setQuestion] = useState<string>('Hmmm let me think...')
     const [choices, setChoices] = useState<Array<string>>([])
 
     // ID for result page
@@ -55,10 +56,10 @@ function App() {
     }
 
     return (
-        <>
+        <div className="h-screen bg-gradient-to-br from-blue-900 via-blue-200 to-blue-500 bg-cover bg-center bg-no-repeat p-12">
             <NotificationHandler notifications={notifications} />
             {renderPage()}
-        </>
+        </div>
     )
 }
 
