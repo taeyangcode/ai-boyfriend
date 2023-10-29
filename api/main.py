@@ -117,6 +117,7 @@ async def get_businesses(input: UserInput):
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## GOOGLE GEOLOCATION API
 @api_app.post("/geolocation")
 
@@ -151,6 +152,8 @@ async def get_coordinates_forAddress(input: GeoInput):
 =======
 <<<<<<< HEAD
 >>>>>>> bbbae32 (merge)
+=======
+>>>>>>> 1516a33 (geographic location info adding)
 @api_app.post("/businesses/{id}")
 async def get_business(id: str):
     search_url = f"{yelp_base_url}businesses/{id}"
@@ -164,7 +167,6 @@ async def get_business(id: str):
         return response.json()
     else:
         return {"error": response.status_code}
-=======
 ## GOOGLE GEOLOCATION API
 @api_app.post("/geolocation")
 
@@ -196,7 +198,6 @@ async def get_coordinates_forAddress(input: GeoInput):
     except Exception as e:
         print("Error fetching coordinates:", str(e))
         return None
->>>>>>> 377ce31 (geographic location info adding)
 
 
 ## OPENAI API

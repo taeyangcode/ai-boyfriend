@@ -10,7 +10,6 @@ type FoodCategory = 'vegetarian' | 'vegan' | 'seafood' | 'gluten_free'
 type Page = 'preference' | 'questionnaire' | 'result'
 
 type UserInput = {
-<<<<<<< HEAD
     longitude: number
     latitude: number
     price: number
@@ -35,7 +34,6 @@ type GeoInput = {
 };
 
 type NotificationType = ErrorDetails;
->>>>>>> bbbae32 (merge)
 
 interface ErrorDetails {
     code: number
