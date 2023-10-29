@@ -47,6 +47,26 @@ interface ErrorDetails {
     message: string
 }
 
+interface UserResponse {
+    role: 'user'
+    content: string
+}
+
+interface AssistantResponse {
+    role: 'assistant'
+    content: null
+    function_call: {
+        name: string
+        arguments: string
+    }
+}
+
+interface ResponseChain {
+    latest_response: AssistantResponse
+    messages: Array<UserResponse | AssistantResponse>
+    yelp_response_mapped: Record<string, any>
+}
+
 interface YelpCategory {
     alias: string
     // Alias of a category, when searching for business in certain categories, use alias rather than the title.

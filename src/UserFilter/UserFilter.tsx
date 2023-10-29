@@ -44,26 +44,16 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
         }
     }
 
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => setCurrentPosition(position),
-            (error) => setNotifications([...notifications, { code: error.code, message: error.message }]),
-            { timeout: 30000 }
-        )
-    }, [])
-
     async function submitForm(event: MouseEvent<HTMLButtonElement>) {
         event.preventDefault() // Prevent page from refreshing
 
         const input: UserInput = {
-            input: {
-                longitude: Number(currentPosition?.coords.longitude),
-                latitude: Number(currentPosition?.coords.latitude),
-                price: Number(budget),
-                radius: Number(distance),
-                date: Number(time),
-                dietary_preferences: dietaryPreferences,
-            },
+            longitude: Number(longitude),
+            latitude: Number(latitude),
+            price: Number(budget),
+            radius: Number(distance),
+            date: Number(time),
+            dietary_preferences: dietaryPreferences,
         }
 
         // First response to check if there is already a result

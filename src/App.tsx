@@ -5,9 +5,7 @@ import Result from './Result/Result'
 import NotificationHandler from './Notification/Notification'
 
 function App() {
-    const [notifications, setNotifications] = useState<Array<NotificationType>>(
-        []
-    )
+    const [notifications, setNotifications] = useState<Array<NotificationType>>([])
     const [selectedPage, setSelectedPage] = useState<Page>('preference')
 
     // Questions and choices for questionnaire page
@@ -46,15 +44,7 @@ function App() {
                     />
                 )
             case 'result':
-                return (
-                    <Result
-                        locationIds={[
-                            'chick-fil-a-daly-city-2',
-                            'mcdonalds-san-francisco',
-                        ]}
-                        restaurantId={restaurantId}
-                    />
-                )
+                return <Result locationIds={['chick-fil-a-daly-city-2', 'mcdonalds-san-francisco']} restaurantId={restaurantId} />
             default:
                 return (
                     <>
