@@ -1,6 +1,9 @@
 import { useEffect, useState, MouseEvent } from 'react'
 import './../index.css'
 import { showResult, checkResult, getNextQuestion, appendResponse, sendResponse } from '../Helper/Helper'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { addDays } from 'date-fns'
 
 interface Props {
     notifications: Array<NotificationType>
@@ -13,12 +16,14 @@ interface Props {
 
 function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
     const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
+function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
+    const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
 
     const [latitude, setLatitude] = useState<string>('')
     const [longitude, setLongitude] = useState<string>('')
-    const [budget, setBudget] = useState<string>('40')
-    const [distance, setDistance] = useState<string>('1234')
-    const [time, setTime] = useState<string>('1698639245')
+    const [budget, setBudget] = useState<string>('')
+    const [distance, setDistance] = useState<string>('')
+    const [date, setDate] = useState<Date>(new Date())
     const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
 
     const [address, setAddress] = useState<string>('426 27th ave')
@@ -26,13 +31,23 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
     const [state, setState] = useState<string>('ca')
 
     const handleDietaryPreferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleDietaryPreferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = event.target
         if (checked) {
             setDietaryPreferences([...dietaryPreferences, value])
         } else {
             setDietaryPreferences(dietaryPreferences.filter((pref) => pref !== value))
+            setDietaryPreferences(dietaryPreferences.filter((pref) => pref !== value))
         }
     }
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => setCurrentPosition(position),
+            (error) => setNotifications([...notifications, { code: error.code, message: error.message }]),
+            { timeout: 30000 }
+        )
+    }, [])
 
     async function submitForm(event: MouseEvent<HTMLButtonElement>) {
         event.preventDefault() // Prevent page from refreshing
@@ -43,13 +58,20 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                 latitude: Number(latitude),
                 price: Number(budget),
                 radius: Number(distance),
-                date: Number(time),
+                date: Number(date),
                 dietary_preferences: dietaryPreferences,
             },
         }
 
         // First response to check if there is already a result
         // If have_result is false, we continue to get more questions to ask the user to narrow down the list of restaurants
+        const initialResponse = await fetch('http://127.0.0.1:8000/api/get_result', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(input),
+        })
         const initialResponse = await fetch('http://127.0.0.1:8000/api/get_result', {
             method: 'POST',
             headers: {
@@ -189,12 +211,25 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
                 </div>
                 <div className="mb-4">
                     <label className="mb-2 block">What time do you want to visit the restaurant? </label>
+                    <DatePicker
+                        selected={date}
+                        dateFormat="MMMM d, yyyy h:mm aa"
+                        onChange={(date) => setDate(date ?? new Date())}
+                        minDate={new Date()}
+                        maxDate={addDays(new Date(), 365)}
+                        placeholderText="Click to select a date and time"
+                        showTimeSelect
+                        showIcon
+                        fixedHeight
+                        inline
+                    />
+                    {/* <label className="mb-2 block">What time do you want to visit the restaurant? </label>
                     <input
                         type="text"
                         value={time}
                         onChange={(e) => setTime(e.target.value)}
                         className="w-full rounded border border-gray-300 px-2 py-1"
-                    />
+                    /> */}
                 </div>
                 <div className="mb-4">
                     <label className="mb-2 block">Do you have any dietary preferences?</label>
