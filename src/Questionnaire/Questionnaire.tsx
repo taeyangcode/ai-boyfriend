@@ -3,6 +3,7 @@ import Question from './Question'
 import { checkResult, showResult, getNextQuestion, appendResponse, sendResponse } from '../Helper/Helper'
 
 import './../index.css'
+import Choice from './Choice'
 
 interface Props {
     changePage: (newPage: Page) => void
@@ -26,12 +27,7 @@ function QuestionScreen({ question, choices }: Props) {
                 <div className="w-1/2 p-4">
                     <ul>
                         {choices.map((choice) => (
-                            <li key={choice} className="mb-2">
-                                <label className="inline-flex items-center">
-                                    <input type="radio" className="form-radio-custom" name="question-options" value={choice} />
-                                    <span className="ml-2">{choice}</span>
-                                </label>
-                            </li>
+                            <Choice choiceText={choice} />
                         ))}
                     </ul>
                 </div>
