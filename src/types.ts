@@ -8,6 +8,7 @@ type PriceLevel = 1 | 2 | 3 | 4
 type FoodCategory = 'vegetarian' | 'vegan' | 'seafood' | 'gluten_free'
 
 type UserInput = {
+<<<<<<< HEAD
     longitude: number
     latitude: number
     price: number
@@ -17,6 +18,23 @@ type UserInput = {
 }
 
 type NotificationType = ErrorDetails
+=======
+    longitude: number;
+    latitude: number;
+    price: number;
+    radius: number;
+    date: number; // Unix timestamp
+    dietary_preferences: string[];
+};
+
+type GeoInput = {
+    address: string;
+    city: string;
+    state: string;
+};
+
+type NotificationType = ErrorDetails;
+>>>>>>> 377ce31 (geographic location info adding)
 
 interface ErrorDetails {
     code: number
