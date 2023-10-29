@@ -1,20 +1,34 @@
-import { MouseEvent } from 'react'
+import { MouseEvent, useState } from 'react'
 import Question from './Question'
-import { checkResult, showResult, getNextQuestion, appendResponse, sendResponse } from '../Helper/Helper'
+import { checkResult, showResult, getNextQuestion, appendResponse } from '../Helper/Helper'
 
 import './../index.css'
 import Choice from './Choice'
 
 interface Props {
-    changePage: (newPage: Page) => void
+    changePage: (newPage: Page, responseChain?: ResponseChain) => void
     question: string
     setQuestion: (value: string) => void
     choices: Array<string>
     setChoices: (value: Array<string>) => void
+    responseChain?: ResponseChain
+    setResponseChain?: (value: ResponseChain) => void
+    setRestaurantId: (value: Array<string>) => void
 }
 
-function QuestionScreen({ question, choices }: Props) {
+function QuestionScreen({
+    question,
+    choices,
+    setChoices,
+    setQuestion,
+    changePage,
+    responseChain,
+    setResponseChain,
+    setRestaurantId,
+}: Props) {
+    console.info('response chain QUESTION: ', responseChain)
     // function to make API post requests with obtained results
+    const [selectedChoices, setSelectedChoices] = useState<Array<string>>([])
 
     return (
         <div>
@@ -27,7 +41,17 @@ function QuestionScreen({ question, choices }: Props) {
                 <div className="p-4">
                     <ul>
                         {choices.map((choice) => (
-                            <Choice choiceText={choice} />
+                            <Choice
+                                responseChain={responseChain}
+                                choiceText={choice}
+                                selectedChoices={selectedChoices}
+                                setSelectedChoices={setSelectedChoices}
+                                changePage={changePage}
+                                setRestaurantId={setRestaurantId}
+                                setQuestion={setQuestion}
+                                setChoices={setChoices}
+                                setResponseChain={setResponseChain}
+                            />
                         ))}
                     </ul>
                 </div>
@@ -36,32 +60,34 @@ function QuestionScreen({ question, choices }: Props) {
     )
 }
 
-function Questionnaire({ changePage, question, setQuestion, choices, setChoices }: Props) {
-    const haveResult = false
+function Questionnaire({
+    changePage,
+    question,
+    setQuestion,
+    choices,
+    setChoices,
+    responseChain,
+    setResponseChain,
+    setRestaurantId,
+}: Props) {
+    console.info('response chain 1', responseChain)
 
-    function submitChoice(event: MouseEvent<HTMLButtonElement>) {
-        event.preventDefault()
-        changePage('result')
-    }
+    // function submitChoice(event: MouseEvent<HTMLButtonElement>) {
+    //     event.preventDefault()
+    // }
 
     return (
         <div>
-            {!haveResult ? (
-                <QuestionScreen
-                    changePage={changePage}
-                    question={question}
-                    setQuestion={setQuestion}
-                    choices={choices}
-                    setChoices={setChoices}
-                />
-            ) : (
-                <>
-                    <div>Alright I have something for you ❤️</div>
-                    <button type="submit" className="rounded bg-blue-500 px-4 py-2 text-white" onClick={submitChoice}>
-                        Show me
-                    </button>
-                </>
-            )}
+            <QuestionScreen
+                changePage={changePage}
+                question={question}
+                setQuestion={setQuestion}
+                choices={choices}
+                setChoices={setChoices}
+                responseChain={responseChain}
+                setResponseChain={setResponseChain}
+                setRestaurantId={setRestaurantId}
+            />
         </div>
     )
 }
