@@ -11,8 +11,6 @@ function Result({ locationIds }: Props) {
 
     useEffect(() => {
         async function getLocationData(): Promise<Array<YelpBusiness>> {
-            const locationIds = ['mcdonalds-san-francisco']
-
             const responses: Array<Response> = await Promise.all(
                 locationIds.map((locationId) => fetch(`http://127.0.0.1:8000/api/businesses/${locationId}`, { method: 'POST' }))
             )
