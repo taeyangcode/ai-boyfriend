@@ -65,7 +65,7 @@ function UserFilter({
             dietary_preferences: dietaryPreferences,
         }
         event.preventDefault()
-        const response = await fetch('http://127.0.0.1:8000/api/businesses', {
+        const response = await fetch('http://127.0.0.1:8000/api/get_result', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,16 +75,10 @@ function UserFilter({
         const json = await response.json()
         console.log(json)
 
-        // temporary
-        const question = json['businesses'][0]['name']
-        setQuestion(question)
-        const choices = ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4']
-        setChoices(choices)
-
-        // // Store response of question and choice
-        // const questionAndChoices = json['function_call']['question']
-        // setQuestion(questionAndChoices['question'])
-        // setChoices(questionAndChoices['choices'])
+        // Store response of question and choice
+        const questionAndChoices = json['function_call']['question']
+        setQuestion(questionAndChoices['question'])
+        setChoices(questionAndChoices['choices'])
 
         // Change page
         changePage('questionnaire')
@@ -93,36 +87,38 @@ function UserFilter({
     async function submitAddress() {
         event?.preventDefault()
         if (!address || !city || !state) {
-            alert("Invalid address, city, or state")    
-            return 
+            alert('Invalid address, city, or state')
+            return
         }
-        
+
         const geographicInfo: GeoInput = {
-            address: (address),
-            city: (city),
-            state: (state)
+            address: address,
+            city: city,
+            state: state,
         }
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/geolocation', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(geographicInfo),
-            });
+            const response = await fetch(
+                'http://127.0.0.1:8000/api/geolocation',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(geographicInfo),
+                }
+            )
 
-          
             if (response.ok) {
-              const latlong_response = await response.json();
-              setLatitude(latlong_response.lat);
-              setLongitude(latlong_response.lng);
+                const latlong_response = await response.json()
+                setLatitude(latlong_response.lat)
+                setLongitude(latlong_response.lng)
             } else {
-              // Handle errors here, e.g., response.status and response.statusText
-              console.error('Error:', response.status, response.statusText);
+                // Handle errors here, e.g., response.status and response.statusText
+                console.error('Error:', response.status, response.statusText)
             }
-          } catch (error) {
-            console.error('Error fetching coordinates:', error);
-          }
+        } catch (error) {
+            console.error('Error fetching coordinates:', error)
+        }
     }
 
     return (
@@ -138,9 +134,7 @@ function UserFilter({
 
             <form>
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        Address Line {' '}
-                    </label>
+                    <label className="mb-2 block">Address Line </label>
                     <input
                         type="text"
                         value={address}
@@ -150,9 +144,7 @@ function UserFilter({
                 </div>
 
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        City{' '}
-                    </label>
+                    <label className="mb-2 block">City </label>
                     <input
                         type="text"
                         value={city}
@@ -162,9 +154,7 @@ function UserFilter({
                 </div>
 
                 <div className="mb-4">
-                    <label className="mb-2 block">
-                        State{' '}
-                    </label>
+                    <label className="mb-2 block">State </label>
                     <input
                         type="text"
                         value={state}
@@ -180,8 +170,6 @@ function UserFilter({
                 >
                     Get Geographic Information
                 </button>
-
-
             </form>
 
             <form>
