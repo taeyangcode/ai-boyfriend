@@ -32,6 +32,7 @@ class UserInput(BaseModel):
     dietary_preferences: List[str]
 
 
+<<<<<<< HEAD
 
 class Message(BaseModel):
     role: str
@@ -53,12 +54,17 @@ class AIInput(BaseModel):
     messages: Optional[List[dict]] = None
 
 
+=======
+>>>>>>> bbbae32 (merge)
 class GeoInput(BaseModel):
     address: str
     city: str
     state: str
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> bbbae32 (merge)
 ## Define apps
 app = FastAPI(title="main app")
 api_app = FastAPI(title="api app")
@@ -110,6 +116,7 @@ async def get_businesses(input: UserInput):
         return {"error": response.status_code}
 
 
+<<<<<<< HEAD
 ## GOOGLE GEOLOCATION API
 @api_app.post("/geolocation")
 
@@ -141,6 +148,9 @@ async def get_coordinates_forAddress(input: GeoInput):
     except Exception as e:
         print("Error fetching coordinates:", str(e))
         return None
+=======
+<<<<<<< HEAD
+>>>>>>> bbbae32 (merge)
 @api_app.post("/businesses/{id}")
 async def get_business(id: str):
     search_url = f"{yelp_base_url}businesses/{id}"
@@ -154,6 +164,39 @@ async def get_business(id: str):
         return response.json()
     else:
         return {"error": response.status_code}
+=======
+## GOOGLE GEOLOCATION API
+@api_app.post("/geolocation")
+
+async def get_coordinates_forAddress(input: GeoInput):
+    api_url = "https://maps.googleapis.com/maps/api/geocode/json"
+
+    params = {
+        "address": input.address + ", " + input.city + ", " + input.state,
+        "key": googleGeoLoc_api_key,
+    }
+
+    try:
+        response = requests.get(api_url, params=params)
+        data = response.json()
+            
+        print("DEBUG") 
+        print(data)
+        print("DEBUG")
+        if data.get("status") == "OK":
+
+            result = data["results"][0]
+            location = result["geometry"]["location"]
+            lat = location["lat"]
+            lng = location["lng"]
+            return {"lat": lat, "lng": lng}
+        else:
+            return None
+
+    except Exception as e:
+        print("Error fetching coordinates:", str(e))
+        return None
+>>>>>>> 377ce31 (geographic location info adding)
 
 
 ## OPENAI API
@@ -408,6 +451,8 @@ async def get_ai_prompts(ai_input: AIInput):
         "messages": messages,
         "yelp_response_mapped": mapped_response,
     }
+
+
 
 
 
