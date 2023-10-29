@@ -16,9 +16,6 @@ interface Props {
 
 function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
     const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
-function UserFilter({ notifications, setNotifications, changePage, setQuestion, setChoices, setRestaurantId }: Props) {
-    const [currentPosition, setCurrentPosition] = useState<GeolocationPosition>()
-
     const [latitude, setLatitude] = useState<string>('')
     const [longitude, setLongitude] = useState<string>('')
     const [budget, setBudget] = useState<string>('')
@@ -31,12 +28,10 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
     const [state, setState] = useState<string>('ca')
 
     const handleDietaryPreferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const handleDietaryPreferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = event.target
         if (checked) {
             setDietaryPreferences([...dietaryPreferences, value])
         } else {
-            setDietaryPreferences(dietaryPreferences.filter((pref) => pref !== value))
             setDietaryPreferences(dietaryPreferences.filter((pref) => pref !== value))
         }
     }
@@ -65,13 +60,6 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
 
         // First response to check if there is already a result
         // If have_result is false, we continue to get more questions to ask the user to narrow down the list of restaurants
-        const initialResponse = await fetch('http://127.0.0.1:8000/api/get_result', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(input),
-        })
         const initialResponse = await fetch('http://127.0.0.1:8000/api/get_result', {
             method: 'POST',
             headers: {
