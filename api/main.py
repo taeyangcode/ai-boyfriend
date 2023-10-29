@@ -49,7 +49,7 @@ class Messages(BaseModel):
 
 class AIInput(BaseModel):
     input: UserInput
-    messages: Optional[List[dict]] = None
+    messages: Optional[Messages] = None
 
 
 class GeoInput(BaseModel):
@@ -198,32 +198,25 @@ async def get_question(messages: Messages):
                 "type": "object",
                 "properties": {
                     "question": {
-                        "type": "object",
-                        "description": "The question to ask the user together with the choices for answers if have_result = false",
-                        "properties": {
-                            "question": {
-                                "type": "string",
-                                "description": "The question to ask the user",
-                            },
-                            "choices": {
-                                "type": "array",
-                                "description": "The choices for answers to the corresponding question",
-                                "items": {
+                        "type": "string",
+                        "description": "The question to ask the user",
+                    },
+                    "choices": {
+                        "type": "array",
+                        "description": "The choices for answers to the corresponding question",
+                        "items": {
+                            "type": "string",
+                            "properties": {
+                                "choice": {
                                     "type": "string",
-                                    "properties": {
-                                        "choice": {
-                                            "type": "string",
-                                        }
-                                    },
-                                },
+                                }
                             },
                         },
-                        "required": ["question", "choices"],
                     },
                 },
-                "required": ["question"],
+                "required": ["question", "choices"],
             },
-        }
+        },
     ]
     messages_formatted = [message.to_dict() for message in messages.messages]
     response = openai.ChatCompletion.create(
@@ -244,12 +237,13 @@ async def get_question(messages: Messages):
 
 
 @api_app.post("/get_result")
-async def get_result(input: UserInput):
-    radius = input.radius
-    latitude = input.latitude
-    longitude = input.longitude
+async def get_result(ai_input: AIInput):
+    print(ai_input)
+    radius = ai_input.input.radius
+    latitude = ai_input.input.latitude
+    longitude = ai_input.input.longitude
 
-    yelp_response = await get_businesses(input)
+    yelp_response = await get_businesses(ai_input.input)
     print(yelp_response)
     list_of_restaurants = [business["name"] for business in yelp_response["businesses"]]
     mapped_response = [
@@ -315,127 +309,6 @@ async def get_result(input: UserInput):
         "messages": messages,
         "yelp_response_mapped": mapped_response,
     }
-
-
-# @api_app.post("/ai_prompts")
-# async def get_ai_prompts(ai_input: AIInput):
-#     radius = ai_input.input.radius
-#     latitude = ai_input.input.latitude
-#     longitude = ai_input.input.longitude
-
-#     yelp_response = await get_businesses(ai_input.input)
-#     list_of_restaurants = [business["name"] for business in yelp_response["businesses"]]
-#     mapped_response = [
-#         {
-#             "id": business["id"],
-#             "name": business["name"],
-#             "review_count": business["review_count"],
-#             "categories": business["categories"],
-#             "rating": business["rating"],
-#             "is_closed": business["is_closed"],
-#             "distance": business["distance"],
-#         }
-#         for business in yelp_response["businesses"]
-#     ]
-#     user_prompt = f"Your goal is to narrow down the list of restaurants to a specific restaurant by asking the user questions using the information in JSON provided, 1 question at a time with choices. The user wants to dine within {radius}m of coordinates ({latitude}, {longitude}) on Monday, 2pm. List of restaurants: {list_of_restaurants}. Information about each restaurant: {mapped_response}"
-#     messages = (
-#         ai_input.messages
-#         if ai_input.messages
-#         else [
-#             {"role": "user", "content": user_prompt},
-#         ]
-#     )
-#     functions = [
-#         {
-#             "name": "get_question",
-#             "description": "Get question to narrow down list of restaurants",
-#             "parameters": {
-#                 "type": "object",
-#                 "properties": {
-#                     "have_result": {
-#                         "type": "boolean",
-#                         "description": "Whether the model has a final result from the list of restaurants",
-#                     },
-#                     "result": {
-#                         "type": "string",
-#                         "description": "The final result from the list of restaurants",
-#                     },
-#                     "question": {
-#                         "type": "object",
-#                         "description": "The question to ask the user together with the choices for answers if have_result = false",
-#                         "properties": {
-#                             "question": {
-#                                 "type": "string",
-#                                 "description": "The question to ask the user",
-#                             },
-#                             "choices": {
-#                                 "type": "array",
-#                                 "description": "The choices for answers to the corresponding question",
-#                                 "items": {
-#                                     "type": "string",
-#                                     "properties": {
-#                                         "choice": {
-#                                             "type": "string",
-#                                         }
-#                                     },
-#                                 },
-#                             },
-#                         },
-#                     },
-#                 },
-#                 "required": ["have_result"],
-#             },
-#         }
-#     ]
-
-#     # messages.append(
-#     #     {
-#     #         "role": "assistant",
-#     #         "content": None,
-#     #         "function_call": {
-#     #             "name": "get_question",
-#     #             "arguments": '{\n  "have_result": false,\n  "question": {\n    "question": "What type of cuisine are you in the mood for?",\n    "choices": ["Mexican", "American", "Thai", "Italian", "French"]\n  }\n}',
-#     #         },
-#     #     }
-#     # )
-#     # messages.append({"role": "user", "content": "American"})
-#     # messages.append(
-#     #     {
-#     #         "role": "assistant",
-#     #         "content": None,
-#     #         "function_call": {
-#     #             "name": "get_question",
-#     #             "arguments": '{\n  "have_result": false,\n  "question": {\n    "question": "Would you prefer a burger joint or a more upscale dining experience?",\n    "choices": ["Burger joint", "Upscale dining"]\n  }\n}',
-#     #         },
-#     #     }
-#     # )
-#     # messages.append({"role": "user", "content": "Upscale dining"})
-#     # messages.append(
-#     #     {
-#     #         "role": "assistant",
-#     #         "content": None,
-#     #         "function_call": {
-#     #             "name": "get_question",
-#     #             "arguments": '{\n  "have_result": false,\n  "question": {\n    "question": "Do you prefer a place that also serves alcohol?",\n    "choices": ["Yes", "No"]\n  }\n}',
-#     #         },
-#     #     }
-#     # )
-#     # messages.append({"role": "user", "content": "Yes"})
-#     response = openai.ChatCompletion.create(
-#         model="gpt-4",
-#         messages=messages,
-#         functions=functions,
-#         function_call={"name": "get_question"},
-#     )
-#     response_message = response["choices"][0]["message"]
-#     print(response)
-#     print(response_message)
-#     messages.append(response_message)
-#     return {
-#         "latest_response": response_message,
-#         "messages": messages,
-#         "yelp_response_mapped": mapped_response,
-#     }
 
 
 ## HELPERS
