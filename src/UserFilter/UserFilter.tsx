@@ -21,13 +21,13 @@ function UserFilter({ notifications, setNotifications, changePage, setQuestion, 
     const [longitude, setLongitude] = useState<string>('')
     const [price, setPrice] = useState<string>('')
     const [budget, setBudget] = useState<number>(36)
-    const [distance, setDistance] = useState<string>('1234')
+    const [distance, setDistance] = useState<string>('')
     const [date, setDate] = useState<Date>(new Date())
     const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
 
-    const [address, setAddress] = useState<string>('426 27th ave')
-    const [city, setCity] = useState<string>('sf')
-    const [state, setState] = useState<string>('ca')
+    const [address, setAddress] = useState<string>('')
+    const [city, setCity] = useState<string>('')
+    const [state, setState] = useState<string>('')
 
     const handleDietaryPreferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = event.target
