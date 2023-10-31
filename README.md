@@ -15,7 +15,14 @@ npm run dev
 
 # Start server and watch for changes
 npm run dev:watch
+```
 
+### Environment File
+
+```env
+YELP_API_KEY="..."
+OPENAI_API_KEY="..."
+GOOGLE_MAPS_API_KEY="..."
 ```
 
 ## Devpost
